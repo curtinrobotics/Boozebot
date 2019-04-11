@@ -1,0 +1,26 @@
+current functionality:
+Drink class,
+drink create function(append to menu),
+menu file,
+constants file,
+ingredient pump file,
+custom drink creation,
+amount of standard drinks
+
+functionality to add:
+costing,
+alchohol percentage,
+GUI,
+database integration,
+payment
+
+things that need to be caught as errors:
+non existant ingredients,
+changing ingredient pumps,
+temporary non existant ingredients,
+
+things to fix:
+need to standardize the variable, file and function names,
+cleaner commenting,
+can't do multiple drinks as ingredient ratio doesn't update correctly,
+Ingredient Volume function doesn't work
