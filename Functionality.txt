@@ -12,7 +12,8 @@ costing,
 alchohol percentage,
 GUI,
 database integration,
-payment
+payment,
+standard drink limit = 2
 
 things that need to be caught as errors:
 non existant ingredients,

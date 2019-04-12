@@ -23,6 +23,7 @@ Drink = input('Drink: ') #gets drink type
 
 if Drink in Data.Menu:
     #assigns ingredients ratios
+    print(Data.Menu[Drink].DrinkIngredients)
     print(Data.Menu[Drink].RecipeRatio)
 
     #converts ratios to volume and prints
