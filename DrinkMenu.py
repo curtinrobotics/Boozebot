@@ -21,7 +21,7 @@ DataUpdate.UpdateMenu('Menu.ini') #updates the menu and recipe instructions
 #gets input
 Drink = input('Drink: ') #gets drink type
 
-if Drink in Data.Menu:
+if (Drink in Data.Menu):
     #assigns ingredients ratios
     print(Data.Menu[Drink].DrinkIngredients)
     print(Data.Menu[Drink].RecipeRatio)
