@@ -20,13 +20,13 @@ def New(name, cupSize, percentage, ingredients):
         cupSize = int(cupSize)
 
     Data.Menu[name].CupSize = cupSize
-    data.Menu[name].MaxFillPercent = percentage
+    Data.Menu[name].MaxFillPercent = percentage
 
     #creates recipe
     for ingredient in ingredients:
         if ingredient in Data.IngredientList:
-            Data.Menu[name].RecipeRatio[ingredient] = int(ingredients[ingredient])
-            Data.Menu[name].DrinkIngredients.append(ingredient)
+            Data.Menu[name].SetRecipeRatio(ingredient, int(ingredients[ingredient]))
+            Data.Menu[name].SetDrinkIngredients(ingredient)
         else: #catches unavailable ingredients
             print('Fatal Error: Missing ingredient. ' + ingredient + ' not available in IngredientList. Exiting program')
             time.sleep(5) #sleeps for 5 seconds for readability

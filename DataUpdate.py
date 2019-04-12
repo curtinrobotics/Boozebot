@@ -75,8 +75,8 @@ def UpdateMenu(file_name):
             if ((ingredient != Recipe[0]) & (ingredient != Recipe[1]) & (ingredient != Recipe[2])):
                 Amount = ingredient.split(': ')
                 if Amount[0] in Data.IngredientList:
-                    Data.Menu[Name].RecipeRatio[Amount[0]] = int(Amount[1])
-                    Data.Menu[Name].DrinkIngredients.append(Amount[0])
+                    Data.Menu[Name].SetRecipeRatio(Amount[0], int(Amount[1]))
+                    Data.Menu[Name].SetDrinkIngredients(Amount[0])
                 else: #catches unavailable ingredients
                     print('Fatal Error: Missing ingredient. ' + Amount[0] + ' not available in IngredientList. Exiting program')
                     time.sleep(5) #sleeps for 5 seconds for readability
