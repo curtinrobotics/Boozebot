@@ -17,7 +17,7 @@ class Drink:
         self.DrinkIngredients = [] #list of ingredient in drink
         self.RecipeRatio = {} #key: ingredient name, value: ratio of ingredient
         self.RecipeVolume = {} #key: ingredient name, value: volume of ingredient(ml)
-        self.RecipeInstructions = [0, 0, 0, 0, 0, 0, 0, 0] #RecipeVolume in an instruction set for the arduino. Default value is 0. key: pump number, value: pump run time
+        self.RecipeInstructions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] #RecipeVolume in an instruction set for the arduino. Default value is 0. key: pump number, value: pump run time
 
     #appends to the drink ingredient list
     def SetDrinkIngredients(self, ingredient):

@@ -9,7 +9,9 @@ import time #imports the time library
 import DrinkClass #imports the the drink class
 import NewDrink #imports the NewDrink function
 import Data #imports the data file
-import DataUpdate # imports the Dataupdate function set
+import DataUpdate #imports the Dataupdate function set
+import Arduino #imports Arduino communication library
+import serial #imports pyserial library
 
 #Updates all data from files
 DataUpdate.UpdateCuptype('Cups.ini') #updates the cup volume list
@@ -36,6 +38,9 @@ if (Drink in Data.Menu):
 
     #print amount of standard Menu[Drink]s
     print(Data.Menu[Drink].GetStndDrink())
+
+    #sends Recipe instructions to the arduino
+    Arduino.sendDrink(Data.Menu[Drink].RecipeInstructions, "COM3")
 else: # gets data for a new custom drink
     custom = input('Drink not on menu, would you like to create a custom drink? ')
     if (custom == 'Yes'):
