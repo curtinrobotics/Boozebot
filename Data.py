@@ -6,13 +6,13 @@
 
 #Constants:
 MLperS = 1 #ml per second of the pump
-StndDrink = 21 #ml alcohol in a standard drink
+stndDrink = 21 #ml alcohol in a standard drink
 
 #Updateable:
-IngredientAlcohol = {'orange juice': 0, 'tequila': 40, 'vodka': 40, 'lemonade': 0, 'milk': 0} #key: ingredient name, value: percentage alchohol
-CupType = {'shot glass': 44, 'wine glass': 415, 'UK pint': 568, 'US pint': 473, 'martini glass': 200} #key: Cup type, value: volume in cup(ml)
+ingredientAlcohol = {'orange juice': 0, 'tequila': 40, 'vodka': 40, 'lemonade': 0, 'milk': 0} #key: ingredient name, value: percentage alchohol
+cupTypes = {'shot glass': 44, 'wine glass': 415, 'UK pint': 568, 'US pint': 473, 'martini glass': 200} #key: Cup type, value: volume in cup(ml)
 
 #Initialized:
-IngredientPump = {} #key: ingredient name, value: pump number
-Menu = {} #list of drinks
-IngredientList = [] #List of Ingredients
+ingredientPump = {} #key: ingredient name, value: pump number
+menu = {} #list of drinks
+ingredientList = [] #List of Ingredients
