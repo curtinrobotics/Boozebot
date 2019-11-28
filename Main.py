@@ -10,6 +10,8 @@ import Drink #imports the the drink class
 import Data #imports the data file
 import Update #imports the Dataupdate function set
 import Arduino #imports Arduino communication library
+import tkinter
+from functools import partial
 
 #Updates all data from files
 Update.updateCupType('Cups.ini') #updates the cup volume list
@@ -19,47 +21,18 @@ Update.updateIngredientList('Ingredients.ini') #updates a list of available ingr
 Update.updateMenu('Menu.ini') #updates the menu and recipe instructions
 
 #gets input
-drink = input('Drink: ').lower() #gets drink type
+top = tkinter.Tk()
 
-if drink in Data.menu:
-    #assigns ingredients ratios
-    print(Data.menu[drink].drinkIngredients)
-    print(Data.menu[drink].recipeRatio)
-
-    #converts ratios to volume and prints
+def orderDrink(drink):
+    print(drink)
     Data.menu[drink].setRecipeVolume()
-    print(Data.menu[drink].recipeVolume)
-
-    #converts volume to instructions for arduino and prints
     Data.menu[drink].setRecipeInstructions()
-    print(Data.menu[drink].recipeInstructions)
-
-    #print amount of standard Menu[Drink]s
-    print(Data.menu[drink].getStndDrink())
-
-    #sends Recipe instructions to the arduino
     Arduino.sendDrink(Data.menu[drink].recipeInstructions, "/dev/tty.usbmodem142101")
-else: # gets data for a new custom drink
-    custom = input('Drink not on menu, would you like to create a custom drink (y/n? ').lower()
-    if (custom == 'y'):
-        cup = input('Cup Type(ml): ').lower() #gets the cup type/volume
-        fill = input('how full would you like your drink(%): ').lower() #gets the percentage fill of the cup
 
-        # gets an ingredient list and ratio
-        ingredients = {}
-        ingredient = input('Ingredient: ').lower()
-        amount = input('Amount as a ratio: ').lower()
-        ingredients[ingredient] = amount
-        while (ingredient != ''):
-            ingredient = input('Ingredient: ').lower()
-            amount = input('Amount as a ratio: ').lower()
-            ingredients[ingredient] = amount
+i = 0
+for drink in Data.menu:
+    B = tkinter.Button(top, text = Data.menu[drink].name, command = partial(orderDrink, Data.menu[drink].name))
+    B.pack()
+    i += 1
 
-        #creates a new drink using the New function
-        Drink.new(drink, cup, fill, ingredients)
-    elif (custom == 'n'):
-        print('okay, returning to main menu')
-    else:
-        print('unrecognised command, returning to main menu')
-
-print('end program')
+top.mainloop()

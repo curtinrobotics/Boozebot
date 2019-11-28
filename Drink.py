@@ -9,7 +9,7 @@ import Data #imports the data file
 import time #imports the time library
 
 def new(name, cupSize, percentage, ingredients):
-    Data.menu[name] = Drink()  # creates a new drink instant with name name
+    Data.menu[name] = Drink(name)  # creates a new drink instant with name name
 
     # converts cupSize to an integer value
     if cupSize in Data.cupTypes:
@@ -34,8 +34,9 @@ def new(name, cupSize, percentage, ingredients):
 #the drink class
 class Drink:
     #initializes drink variables
-    def __init__(self):
+    def __init__(self, name):
         #class variables
+        self.name = name
         self.cupSize = 475 #the size of the cup(ml). Default value is 475, it can be changed to match the drink when an instance is created.
         self.maxFillPercent = 90 #how much of the cup to fill. Default value is 90%, it can be changed to match the drink when an instance is created.
         self.drinkIngredients = [] #list of ingredient in drink

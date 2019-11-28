@@ -65,7 +65,7 @@ def updateMenu(file_name):
 
 
         fill = int(recipe[2])
-        Data.menu[name] = Drink.Drink() #creates a new drink instant with name name
+        Data.menu[name] = Drink.Drink(name) #creates a new drink instant with name name
         Data.menu[name].CupSize = cup
         Data.menu[name].MaxFillPercent = fill
 
