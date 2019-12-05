@@ -20,19 +20,34 @@ Update.updateIngredientPump('Pumps.ini') #updates the ingredient pumps
 Update.updateIngredientList('Ingredients.ini') #updates a list of available ingredients
 Update.updateMenu('Menu.ini') #updates the menu and recipe instructions
 
-#gets input
-top = tkinter.Tk()
-
-def orderDrink(drink):
+def submitDrink(drink='NULL'):
     print(drink)
     Data.menu[drink].setRecipeVolume()
     Data.menu[drink].setRecipeInstructions()
     Arduino.sendDrink(Data.menu[drink].recipeInstructions, "/dev/tty.usbmodem142101")
+    minusDrinkButtons()
+    back = tkinter.Button(top, text = 'back', command = lambda:[plusDrinkButtons(),back.pack_forget()])
+    back.pack()
 
-i = 0
-for drink in Data.menu:
-    B = tkinter.Button(top, text = Data.menu[drink].name, command = partial(orderDrink, Data.menu[drink].name))
-    B.pack()
-    i += 1
+def minusDrinkButtons():
+    for button in drinkButtons:
+        button.pack_forget()
+
+def plusDrinkButtons():
+    for button in drinkButtons:
+        button.pack()
+
+def initDrinkButtons():
+    i = 0
+    for drink in Data.menu:
+        drinkButtons.append(tkinter.Button(top, text = Data.menu[drink].name, command = partial(submitDrink, Data.menu[drink].name)))
+        drinkButtons[i].pack()
+        i += 1
+
+#gets input
+top = tkinter.Tk()
+
+drinkButtons = []
+initDrinkButtons()
 
 top.mainloop()
