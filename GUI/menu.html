@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
   <h1>MENU</h1>
+  {% if customDrinks == True %}
+    <a href="">Custom</a>
+  {% endif %}
   {% for drink in menu %}
     <a href="menu/{{ menu[drink].name }}"><h3>{{ menu[drink].name }}</h3></a>
   {% endfor %}

@@ -18,6 +18,11 @@ class settings(FlaskForm):
     adminOveride = BooleanField('Free Drinks for Admin')
     submit = SubmitField('Continue')
 
+class buyDrink(FlaskForm):
+    ID = IntegerField('Student ID', validators=[DataRequired(), Length(min=2, max=30)])
+    confirm = BooleanField('Confirm Order')
+    submit = SubmitField('Continue')
+
 class confirmOrder(FlaskForm):
     confirm = BooleanField('Confirm Order')
     submit = SubmitField('Continue')
