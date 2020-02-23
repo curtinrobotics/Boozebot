@@ -1,0 +1,4 @@
+<h1>MENU</h1>
+{% for drink in menu %}
+  <a href="menu/{{ menu[drink].name }}"><h3>{{ menu[drink].name }}</h3></a>
+{% endfor %}
