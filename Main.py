@@ -53,7 +53,7 @@ def home():
 
 @app.route("/menu")
 def menu():
-    return render_template('menu.html', menu = Data.menu)
+    return render_template('menu.html', menu = Data.menu, title = 'Menu')
 
 @app.route("/menu/<drinkName>", methods=['GET', 'POST'])
 def drink(drinkName):

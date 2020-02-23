@@ -1,3 +1,5 @@
+{% extends "layout.html" %}
+{% block content %}
 <h1>{{ drink.name }}</h1>
 <form method="POST", action="">
   <p>
@@ -7,3 +9,4 @@
     {{ form.submit }}
   </div>
 </form>
+{% endblock content %}

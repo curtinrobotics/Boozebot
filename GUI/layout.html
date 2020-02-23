@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% if title %}
+      <title>BoozeBot - {{title}}</title>
+    {% else %}
+      <title>BoozeBot</title>
+    {% endif %}
+  </head>
+  <body>
+    <header>
+      <h1><a class="site-name" href="{{ url_for('home') }}">BoozeBot</a></h1>
+      <nav class=>
+        <div class="menu">
+          <a href="{{ url_for('home') }}">Home</a>
+          <a href="">About</a>
+          <a href="{{ url_for('menu') }}">Menu</a>
+        </div>
+        <!-- Sign in menu -->
+        <div class="user-nav">
+          {% if  auth %}
+            {% if auth == 'True' %}
+              <a href="">Logout</a>
+            {% else %}
+              <a href="">Admin</a>
+              <a href="">Register</a>
+              <a href="">Buy Credits</a>
+            {% endif %}
+          {% else %}
+            <a href="">Admin</a>
+            <a href="">Register</a>
+            <a href="">Buy Credits</a>
+          {% endif %}
+        </div>
+      </nav>
+    </header>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </body>
+</html>
