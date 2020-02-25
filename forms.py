@@ -12,14 +12,15 @@ class uploadMenu(FlaskForm):
     pumps = MultipleFileField('Pumps', validators=[FileAllowed(['ini'])])
     submit = SubmitField('Upload')
 
-class settings(FlaskForm):
+class adminSettings(FlaskForm):
     openBar = BooleanField('Open Bar')
     custom = BooleanField('Custom Drinks')
     adminOveride = BooleanField('Free Drinks for Admin')
+    confirm = BooleanField('Confirm Settings')
     submit = SubmitField('Continue')
 
 class buyDrink(FlaskForm):
-    ID = IntegerField('Student ID', validators=[DataRequired(), Length(min=2, max=30)])
+    ID = StringField('Student ID', validators=[DataRequired(), Length(min=2, max=30)])
     confirm = BooleanField('Confirm Order')
     submit = SubmitField('Continue')
 
@@ -28,15 +29,17 @@ class confirmOrder(FlaskForm):
     submit = SubmitField('Continue')
 
 class adminLogin(FlaskForm):
-    ID = IntegerField('Student ID', validators=[DataRequired(), Length(min=2, max=30)])
-    submit = SubmitField('Add Credits')
+    ID = StringField('Student ID', validators=[DataRequired(), Length(min=2, max=30)])
+    submit = SubmitField('Login')
 
 class addCredits(FlaskForm):
-    ID = IntegerField('Student ID', validators=[DataRequired(), Length(min=2, max=30)])
+    ID = StringField('Student ID', validators=[DataRequired(), Length(min=2, max=30)])
+    adminID = StringField('Admin ID', validators=[DataRequired(), Length(min=2, max=30)])
     Credit = IntegerField('Credit', validators=[DataRequired()])
     submit = SubmitField('Add Credits')
 
 class register(FlaskForm):
-    ID = IntegerField('Student ID', validators=[DataRequired(), Length(min=2, max=30)])
+    ID = StringField('Student ID', validators=[DataRequired(), Length(min=2, max=30)])
+    adminID = StringField('Admin ID', validators=[DataRequired(), Length(min=2, max=30)])
     Credit = IntegerField('Credit', validators=[DataRequired()])
     submit = SubmitField('Add Credits')

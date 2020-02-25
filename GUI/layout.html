@@ -18,17 +18,17 @@
         </div>
         <!-- Sign in menu -->
         <div class="user-nav">
-          {% if  auth %}
-            {% if auth == 'True' %}
-              <a href="">Logout</a>
-              <a href="">Settings</a>
+          {% if  session['Auth'] %}
+            {% if session['Auth'] == True %}
+              <a href="{{ url_for('logout') }}">Logout</a>
+              <a href="{{ url_for('setting') }}">Settings</a>
             {% else %}
-              <a href="">Admin</a>
+              <a href="{{ url_for('login') }}">Admin</a>
               <a href="">Register</a>
               <a href="">Buy Credits</a>
             {% endif %}
           {% else %}
-            <a href="">Admin</a>
+            <a href="{{ url_for('login') }}">Admin</a>
             <a href="">Register</a>
             <a href="">Buy Credits</a>
           {% endif %}

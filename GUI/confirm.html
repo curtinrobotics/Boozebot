@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
   <h1>{{ drink.name }}</h1>
-  {% if openBar == False %}
+  {% if session['OpenBar'] == False %}
     <form method="POST", action="">
       <p>
         {{ form.ID.label }} {{ form.ID }}

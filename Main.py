@@ -10,19 +10,16 @@ import Drink #imports the the drink class
 import Data #imports the data file
 import Update #imports the Dataupdate function set
 import Arduino #imports Arduino communication library
-import tkinter
 from functools import partial
 
 #flask
 from PIL import Image
-from forms import uploadMenu, settings, confirmOrder, adminLogin, addCredits, register, buyDrink
+from Forms import uploadMenu, adminSettings, confirmOrder, adminLogin, addCredits, register, buyDrink
 from flask import Flask, render_template, url_for, flash, redirect, session, make_response
-from flask_login import LoginManager
 
 import os
 
-app = Flask(__name__, template_folder="GUI", static_url_path = "/GUI", static_folder = "GUI")
-loginManager = LoginManager(app)
+app = Flask(__name__, template_folder="GUI", static_url_path="/GUI", static_folder="GUI")
 
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
 
@@ -34,36 +31,89 @@ Update.updateIngredientPump('Init/' + InitFile + '/Pumps.ini') #updates the ingr
 Update.updateIngredientList('Init/' + InitFile + '/Ingredients.ini') #updates a list of available ingredients
 Update.updateMenu('Init/' + InitFile + '/Menu.ini') #updates the menu and recipe instructions
 
-users = "Init/users.csv"
+users = "Init/Users.csv"
+
+def startSession():
+    try:
+        if session['RUN'] != True:
+            session['OpenBar'] = False
+            session['CustomDrinks'] = False
+            session['AdminOveride'] = False
+    except:
+        session['RUN'] = True
+        session['OpenBar'] = False
+        session['CustomDrinks'] = False
+        session['AdminOveride'] = False
+    session['RUN'] = True
+
+def closeAuth():
+    session.pop('Auth')
+
+def generateAuth(_ID):
+    usersIN = open(users, 'r')
+    usersOUT = open('Init/out.csv', 'w')
+    for line in usersIN:
+        ID, credit, Name, Access = line.split(', ')
+        if _ID == ID:
+            if Access.strip('\n') == "Admin":
+                session['Auth'] = True
+            else:
+                flash(f'No Admin Access', 'danger')
+        usersOUT.write(line)
+    usersIN.close()
+    usersOUT.close()
+    try:
+        os.remove(users)
+        os.rename('Init/out.csv', users)
+    except PermissionError:
+        print(users + 'is running in a higher process')
+
+def checkAuth():
+    return session.get('Auth')
+
+def purchaseDrink(_ID, drink):
+    usersIN = open(users, 'r')
+    usersOUT = open('Init/out.csv', 'w')
+    for line in usersIN:
+        ID, credit, Name, Access = line.split(', ')
+        if _ID == ID:
+            if session['AdminOveride'] == True and Access == 'Admin':
+                submitDrink(drink)
+            elif int(credit) > 0:
+                credit = int(credit) - 1
+                line = ID + ', ' + str(credit) + ', ' + Name + ', ' + Access + '\n'
+                submitDrink(drink)
+            else:
+                flash(f'No Credit', 'danger')
+        usersOUT.write(line)
+    usersIN.close()
+    usersOUT.close()
+    try:
+        os.remove(users)
+        os.rename('Init/out.csv', users)
+    except PermissionError:
+        print(users + 'is running in a higher process')
 
 def submitDrink(drink='NULL'):
-    print("bugtest")
     print(drink)
     Data.menu[drink].setRecipeVolume()
     Data.menu[drink].setRecipeInstructions()
     Arduino.sendDrink(Data.menu[drink].recipeInstructions, "/dev/tty.usbmodem142101")
 
-#SETTINGS
-SETTINGS = {'OpenBar': False, 'CustomDrinks': False, 'AdminOveride': False}
-Auth = False
-
 @app.route("/home")
 @app.route("/")
 def home():
-    return render_template('home.html', auth=Auth)
+    startSession()
+    return render_template('home.html')
 
 @app.route("/menu")
 def menu():
-    return render_template('menu.html', menu = Data.menu, title = 'Menu', auth=Auth)
-
-@app.route("/login")
-def login():
-    print('hi')
+    return render_template('menu.html', menu=Data.menu, title='Menu')
 
 @app.route("/menu/<drinkName>", methods=['GET', 'POST'])
 def drink(drinkName):
     drinkExists = False
-    if SETTINGS['OpenBar'] == True:
+    if session['OpenBar'] == True:
         form = confirmOrder()
     else:
         form = buyDrink()
@@ -71,42 +121,60 @@ def drink(drinkName):
         for drink in Data.menu:
             if Data.menu[drink].name == drinkName:
                 drinkExists = True
-                if SETTINGS['OpenBar'] == True:
+                if session['OpenBar'] == True:
                     submitDrink(drink)
-
                 else:
-                    usersIN = open(users, 'r')
-                    usersOUT = open('Init/out.csv', 'w')
-                    for line in usersIN:
-                        ID, credit, Name, Access = line.split(', ')
-                        if str(form.ID.data) == ID:
-                            if int(credit) > 0:
-                                credit = int(credit) - 1
-                                line = ID + ', ' + str(credit) + ', ' + Name + ', ' + Access
-                                submitDrink(drink)
-                            else:
-                                flash(f'No Credit', 'danger')
-                        usersOUT.write(line)
-                    usersIN.close()
-                    usersOUT.close()
-                    try:
-                        os.remove(users)
-                        os.rename('Init/out.csv', users)
-                    except PermissionError:
-                        print(users + 'is running in a higher process')
-
+                    purchaseDrink(form.ID.data, drink)
                 return redirect(url_for('menu'))
     for drink in Data.menu:
         if Data.menu[drink].name == drinkName:
             drinkExists = True
-            return render_template('confirm.html', drink = Data.menu[drink], form = form, auth = Auth, openBar = SETTINGS['OpenBar'])
+            return render_template('confirm.html', drink=Data.menu[drink], form=form)
     if drinkExists == False:
         return redirect(url_for('drinkMissing'))
-    return render_template('menu.html', menu = Data.menu, auth = Auth, customDrinks = SETTINGS['CustomDrinks'])
+    return render_template('menu.html', menu=Data.menu)
 
 @app.route("/missing")
 def drinkMissing():
-    return render_template('missing.html', auth=Auth)
+    return render_template('missing.html')
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    form = adminLogin()
+    if form.ID.data:
+        generateAuth(form.ID.data)
+        if checkAuth():
+            return redirect(url_for('setting'))
+    return render_template('login.html', form=form)
+
+@app.route("/logout")
+def logout():
+    closeAuth()
+    return redirect(url_for('menu'))
+
+@app.route("/settings", methods=['GET', 'POST'])
+def setting():
+    form = adminSettings()
+    if checkAuth() == True:
+        #SETTINGS
+        session['OpenBar'] = False
+        session['CustomDrinks'] = False
+        session['AdminOveride'] = False
+        if form.confirm.data:
+            if form.openBar.data:
+                session['OpenBar'] = True
+            else:
+                session['OpenBar'] = False
+            if form.custom.data:
+                session['CustomDrinks'] = True
+            else:
+                session['CustomDrinks'] = False
+            if form.adminOveride.data:
+                session['AdminOveride'] = True
+            else:
+                session['AdminOveride'] = False
+            return redirect(url_for('menu'))
+    return render_template('settings.html', form=form)
 
 if __name__ == '__main__':
     app.run(debug=True)

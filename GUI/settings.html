@@ -1,19 +1,20 @@
-{% extends "layout.html" %}
-{% block content %}
-  {% if auth %}
-    {% if auth == 'True' %}
-      <nav class=>
-        <a href="">Upload Menu</a>
-        <a href="">Select Menu</a>
-        <a href="">Settings</a>
-      </nav>
-      {% block content %}{% endblock %}
-    {% else %}
-    <p>You need to be logged in as admin to access this page</p>
-    <a href="{{ url_for('menu') }}">Return to Menu</a>
-    {% endif %}
-  {% else %}
-    <p>You need to be logged in as admin to access this page</p>
-    <a href="{{ url_for('menu') }}">Return to Menu</a>
-  {% endif %}
-{% endblock content %}
+{% extends "settings-layout.html" %}
+{% block settings %}
+<form method="POST", action="">
+  <p>
+    {{ form.openBar.label }} {{ form.openBar }}
+  </p>
+  <p>
+    {{ form.custom.label }} {{ form.custom }}
+  </p>
+  <p>
+    {{ form.adminOveride.label }} {{ form.adminOveride }}
+  </p>
+  <p>
+    {{ form.confirm.label }} {{ form.confirm }}
+  </p>
+  <div>
+    {{ form.submit }}
+  </div>
+</form>
+{% endblock settings %}
