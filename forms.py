@@ -1,15 +1,16 @@
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm, Form
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, MultipleFileField, IntegerField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 
 #TODO: custom drink form, select menu form
 
 class uploadMenu(FlaskForm):
     name = StringField('Menu Name', validators=[DataRequired(), Length(min=2, max=30)])
-    menu = MultipleFileField('Menu', validators=[FileAllowed(['ini'])])
-    ingredients = MultipleFileField('Ingredients', validators=[FileAllowed(['ini'])])
-    pumps = MultipleFileField('Pumps', validators=[FileAllowed(['ini'])])
+    menu = FileField('Menu', validators=[FileAllowed(['ini', 'txt'])])
+    ingredients = FileField('Ingredients', validators=[FileAllowed(['ini', 'txt'])])
+    pumps = FileField('Pumps', validators=[FileAllowed(['ini', 'txt'])])
+    confirm = BooleanField('Confirm Settings')
     submit = SubmitField('Upload')
 
 class adminSettings(FlaskForm):

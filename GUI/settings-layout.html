@@ -3,9 +3,9 @@
   {% if session['Auth'] %}
     {% if session['Auth'] == True %}
       <nav class=>
-        <a href="">Upload Menu</a>
-        <a href="">Select Menu</a>
-        <a href="">Settings</a>
+        <a href="{{ url_for('newMenu') }}">Upload Menu</a>
+        <a href="{{ url_for('selectMenu') }}">Select Menu</a>
+        <a href="{{ url_for('setting') }}">Settings</a>
       </nav>
       {% block settings %}{% endblock %}
     {% else %}

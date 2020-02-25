@@ -1,0 +1,24 @@
+{% extends "settings-layout.html" %}
+{% block settings %}
+  <h1>UPLOAD</h1>
+  <form method="POST", action="">
+    <p>
+      {{ form.name.label }} {{ form.name }}
+    </p>
+    <p>
+      {{ form.menu.label }} {{ form.menu }}
+    </p>
+    <p>
+      {{ form.ingredients.label }} {{ form.ingredients }}
+    </p>
+    <p>
+      {{ form.pumps.label }} {{ form.pumps }}
+    </p>
+    <p>
+      {{ form.confirm.label }} {{ form.confirm }}
+    </p>
+    <div>
+      {{ form.submit }}
+    </div>
+  </form>
+{% endblock settings %}

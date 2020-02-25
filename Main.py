@@ -21,26 +21,29 @@ import os
 
 app = Flask(__name__, template_folder="GUI", static_url_path="/GUI", static_folder="GUI")
 
-app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
+app.config['SECRET_KEY'] = '5791628bb0b13ceh98dfjk7lp76dfde280ba245'
 
 #Updates all data from files
-InitFile = "Standard"
-Update.updateCupType('Init/Cups.ini') #updates the cup volume list
-Update.updateIngredientAlcohol('Init/AlcoholContent.ini') #updates the alcholic content of ingredients list
-Update.updateIngredientPump('Init/' + InitFile + '/Pumps.ini') #updates the ingredient pumps
-Update.updateIngredientList('Init/' + InitFile + '/Ingredients.ini') #updates a list of available ingredients
-Update.updateMenu('Init/' + InitFile + '/Menu.ini') #updates the menu and recipe instructions
+def initializeMenu(InitFile="Standard"):
+    Update.updateCupType('Init/Cups.ini') #updates the cup volume list
+    Update.updateIngredientAlcohol('Init/AlcoholContent.ini') #updates the alcholic content of ingredients list
+    Update.updateIngredientPump('Init/' + InitFile + '/Pumps.ini') #updates the ingredient pumps
+    Update.updateIngredientList('Init/' + InitFile + '/Ingredients.ini') #updates a list of available ingredients
+    Update.updateMenu('Init/' + InitFile + '/Menu.ini') #updates the menu and recipe instructions
 
 users = "Init/Users.csv"
+menus = "Init/Menu.csv"
 
 def startSession():
     try:
         if session['RUN'] != True:
+            initializeMenu()
             session['OpenBar'] = False
             session['CustomDrinks'] = False
             session['AdminOveride'] = False
     except:
         session['RUN'] = True
+        initializeMenu()
         session['OpenBar'] = False
         session['CustomDrinks'] = False
         session['AdminOveride'] = False
@@ -75,17 +78,18 @@ def purchaseDrink(_ID, drink):
     usersIN = open(users, 'r')
     usersOUT = open('Init/out.csv', 'w')
     for line in usersIN:
-        ID, credit, Name, Access = line.split(', ')
-        if _ID == ID:
-            if session['AdminOveride'] == True and Access == 'Admin':
-                submitDrink(drink)
-            elif int(credit) > 0:
-                credit = int(credit) - 1
-                line = ID + ', ' + str(credit) + ', ' + Name + ', ' + Access + '\n'
-                submitDrink(drink)
-            else:
-                flash(f'No Credit', 'danger')
-        usersOUT.write(line)
+        if len(line) > 5:
+            ID, credit, Name, Access = line.split(', ')
+            if _ID == ID:
+                if session['AdminOveride'] == True and Access == 'Admin':
+                    submitDrink(drink)
+                elif int(credit) > 0:
+                    credit = int(credit) - 1
+                    line = ID + ', ' + str(credit) + ', ' + Name + ', ' + Access + '\n'
+                    submitDrink(drink)
+                else:
+                    flash(f'No Credit', 'danger')
+            usersOUT.write(line)
     usersIN.close()
     usersOUT.close()
     try:
@@ -99,6 +103,43 @@ def submitDrink(drink='NULL'):
     Data.menu[drink].setRecipeVolume()
     Data.menu[drink].setRecipeInstructions()
     Arduino.sendDrink(Data.menu[drink].recipeInstructions, "/dev/tty.usbmodem142101")
+
+def saveFile(file, location, name='NULL'):
+    try:
+        os.mkdir(location)
+        print("Directory " , location,  " Created ")
+    except FileExistsError:
+        print("Directory " , location,  " already exists")
+    if name == 'NULL':
+        name = file
+    print("hello" + str(file))
+    f = open(file, 'r')
+    f.save(location + name)
+    return location + name
+
+def saveMenu(_menu, _ingredients, _pumps, name):
+    menusIN = open(menus, 'r')
+    menuNUM = 0
+    for line in menusIN:
+        if name in line:
+            menuNNUM += 1
+    if menuNUM > 0:
+        print(name + ' already exists. creating ' + name + str(menuNUM))
+        name = name + str(menuNUM)
+    menusIN.close()
+    menusOUT = open(menus, 'a')
+    menusOUT.write(name)
+    location = 'Init/' + name + '/'
+    try:
+        os.mkdir(location)
+        print("Directory " , location,  " Created ")
+    except FileExistsError:
+        print("Directory " , location,  " already exists")
+    saveFile(_menu, location, 'Menu.ini')
+    saveFile(_ingredients, location, 'Ingredients.ini')
+    saveFile(_pumps, location, 'Pumps.ini')
+
+initializeMenu()
 
 @app.route("/home")
 @app.route("/")
@@ -145,7 +186,7 @@ def login():
         generateAuth(form.ID.data)
         if checkAuth():
             return redirect(url_for('setting'))
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, title='login')
 
 @app.route("/logout")
 def logout():
@@ -174,7 +215,30 @@ def setting():
             else:
                 session['AdminOveride'] = False
             return redirect(url_for('menu'))
-    return render_template('settings.html', form=form)
+    return render_template('settings.html', form=form, title='settings')
+
+@app.route("/select/menu", methods=['GET', 'POST'])
+def selectMenu():
+    menusIN = open(menus, 'r')
+    list = []
+    for line in menusIN:
+        line = line.strip('\n')
+        list.append(line)
+    return render_template('select-menu.html', list=list, title='settings')
+
+@app.route("/select/menu/<menuName>", methods=['GET', 'POST'])
+def initMenu(menuName):
+    initializeMenu(menuName)
+    return redirect(url_for('menu'))
+
+@app.route("/upload/menu", methods=['GET', 'POST'])
+def newMenu():
+    form = uploadMenu()
+    if form.confirm.data:
+        print(form.menu.data)
+        saveMenu(form.menu.data, form.ingredients.data, form.pumps.data, form.name.data)
+        return redirect(url_for('selectMenu'))
+    return render_template('upload-menu.html', form=form, title='settings')
 
 if __name__ == '__main__':
     app.run(debug=True)

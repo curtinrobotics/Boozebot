@@ -1,0 +1,7 @@
+{% extends "settings-layout.html" %}
+{% block settings %}
+  <h1>MENUS</h1>
+  {% for menu in list %}
+    <a href="/select/menu/{{ menu }}"><h3>{{ menu }}</h3></a>
+  {% endfor %}
+{% endblock settings %}
