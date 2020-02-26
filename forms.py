@@ -1,15 +1,23 @@
 from flask_wtf import FlaskForm, Form
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, BooleanField, FileField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 
-#TODO: custom drink form, select menu form
+#TODO: custom drink form, registration form implement, buy credits form implement
 
-class uploadMenu(FlaskForm):
+#filefield doesn't work
+#class uploadMenu(Form):
+#    name = StringField('Menu Name', validators=[DataRequired(), Length(min=2, max=30)])
+#    menu = FileField('Menu', validators=[DataRequired(), FileAllowed(['ini'])])
+#    ingredients = FileField('Ingredients', validators=[DataRequired(), FileAllowed(['ini'])])
+#    pumps = FileField('Pumps', validators=[DataRequired(), FileAllowed(['ini'])])
+#    confirm = BooleanField('Confirm Settings')
+#    submit = SubmitField('Upload')
+
+class uploadMenu(Form):
     name = StringField('Menu Name', validators=[DataRequired(), Length(min=2, max=30)])
-    menu = FileField('Menu', validators=[FileAllowed(['ini', 'txt'])])
-    ingredients = FileField('Ingredients', validators=[FileAllowed(['ini', 'txt'])])
-    pumps = FileField('Pumps', validators=[FileAllowed(['ini', 'txt'])])
+    browse = FileField('Browse File system')
+    location = StringField('Menu directory location', validators=[DataRequired(), Length(min=2)])
     confirm = BooleanField('Confirm Settings')
     submit = SubmitField('Upload')
 
@@ -41,6 +49,7 @@ class addCredits(FlaskForm):
 
 class register(FlaskForm):
     ID = StringField('Student ID', validators=[DataRequired(), Length(min=2, max=30)])
+    Name = StringField('Name', validators=[DataRequired(), Length(min=2, max=30)])
     adminID = StringField('Admin ID', validators=[DataRequired(), Length(min=2, max=30)])
     Credit = IntegerField('Credit', validators=[DataRequired()])
     submit = SubmitField('Add Credits')

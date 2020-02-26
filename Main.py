@@ -14,7 +14,7 @@ from functools import partial
 
 #flask
 from PIL import Image
-from Forms import uploadMenu, adminSettings, confirmOrder, adminLogin, addCredits, register, buyDrink
+from forms import uploadMenu, adminSettings, confirmOrder, adminLogin, addCredits, register, buyDrink
 from flask import Flask, render_template, url_for, flash, redirect, session, make_response
 
 import os
@@ -112,10 +112,13 @@ def saveFile(file, location, name='NULL'):
         print("Directory " , location,  " already exists")
     if name == 'NULL':
         name = file
-    print("hello" + str(file))
-    f = open(file, 'r')
-    f.save(location + name)
-    return location + name
+    print("hello" + str(file)) #bugtest
+    fileIN = open(file, 'r')
+    fileOUT = open(location + name, 'w')
+    for line in fileIN:
+        fileOUT.write(line)
+    fileIN.close()
+    fileOUT.close()
 
 def saveMenu(_menu, _ingredients, _pumps, name):
     menusIN = open(menus, 'r')
@@ -129,6 +132,7 @@ def saveMenu(_menu, _ingredients, _pumps, name):
     menusIN.close()
     menusOUT = open(menus, 'a')
     menusOUT.write(name)
+    menusOUT.close()
     location = 'Init/' + name + '/'
     try:
         os.mkdir(location)
@@ -235,8 +239,14 @@ def initMenu(menuName):
 def newMenu():
     form = uploadMenu()
     if form.confirm.data:
-        print(form.menu.data)
-        saveMenu(form.menu.data, form.ingredients.data, form.pumps.data, form.name.data)
+        absFilePath = form.location.data
+        if absFilePath[-1] != '/':
+            absFilePath = absFilePath + '/'
+        print(absFilePath) #bugtest
+        menu = absFilePath + 'Menu.ini'
+        ingredients = absFilePath + 'Ingredients.ini'
+        pumps = absFilePath + 'Pumps.ini'
+        saveMenu(menu, ingredients, pumps, form.name.data)
         return redirect(url_for('selectMenu'))
     return render_template('upload-menu.html', form=form, title='settings')
 
