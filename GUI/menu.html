@@ -2,7 +2,7 @@
 {% block content %}
   <h1>MENU</h1>
   {% if session['CustomDrinks'] == True %}
-    <a href=""><h3>Custom</h3></a>
+    <a href="{{ url_for('custom') }}"><h3>Custom</h3></a>
   {% endif %}
   {% for drink in menu %}
     <a href="menu/{{ menu[drink].name }}"><h3>{{ menu[drink].name }}</h3></a>

@@ -24,13 +24,13 @@
               <a href="{{ url_for('setting') }}">Settings</a>
             {% else %}
               <a href="{{ url_for('login') }}">Admin</a>
-              <a href="">Register</a>
-              <a href="">Buy Credits</a>
+              <a href="{{ url_for('register') }}">Register</a>
+              <a href="{{ url_for('buyCredit') }}">Buy Credits</a>
             {% endif %}
           {% else %}
             <a href="{{ url_for('login') }}">Admin</a>
-            <a href="">Register</a>
-            <a href="">Buy Credits</a>
+            <a href="{{ url_for('register') }}">Register</a>
+            <a href="{{ url_for('buyCredit') }}">Buy Credits</a>
           {% endif %}
         </div>
       </nav>

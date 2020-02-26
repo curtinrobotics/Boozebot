@@ -1,0 +1,7 @@
+{% extends "layout.html" %}
+{% block content %}
+  {% for ingredient in form.ingredients %}
+    {{ address_entry_form.hidden_tag() }}
+    {{ forms.render_field(address_entry_form.name) }}
+  {% endfor %}
+{% endblock content %}

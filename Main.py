@@ -14,7 +14,7 @@ from functools import partial
 
 #flask
 from PIL import Image
-from forms import uploadMenu, adminSettings, confirmOrder, adminLogin, addCredits, register, buyDrink
+from forms import uploadMenu, adminSettings, confirmOrder, adminLogin, addCredits, newUser, buyDrink, customDrink
 from flask import Flask, render_template, url_for, flash, redirect, session, make_response
 
 import os
@@ -54,22 +54,15 @@ def closeAuth():
 
 def generateAuth(_ID):
     usersIN = open(users, 'r')
-    usersOUT = open('Init/out.csv', 'w')
     for line in usersIN:
-        ID, credit, Name, Access = line.split(', ')
-        if _ID == ID:
-            if Access.strip('\n') == "Admin":
-                session['Auth'] = True
-            else:
-                flash(f'No Admin Access', 'danger')
-        usersOUT.write(line)
+        if len(line) > 5:
+            ID, Credit, Name, Access = line.split(', ')
+            if _ID == ID:
+                if Access.strip('\n') == "Admin":
+                    session['Auth'] = True
+                else:
+                    flash(f'No Admin Access', 'danger')
     usersIN.close()
-    usersOUT.close()
-    try:
-        os.remove(users)
-        os.rename('Init/out.csv', users)
-    except PermissionError:
-        print(users + 'is running in a higher process')
 
 def checkAuth():
     return session.get('Auth')
@@ -79,13 +72,13 @@ def purchaseDrink(_ID, drink):
     usersOUT = open('Init/out.csv', 'w')
     for line in usersIN:
         if len(line) > 5:
-            ID, credit, Name, Access = line.split(', ')
+            ID, Credit, Name, Access = line.split(', ')
             if _ID == ID:
                 if session['AdminOveride'] == True and Access == 'Admin':
                     submitDrink(drink)
-                elif int(credit) > 0:
-                    credit = int(credit) - 1
-                    line = ID + ', ' + str(credit) + ', ' + Name + ', ' + Access + '\n'
+                elif int(Credit) > 0:
+                    Credit = int(Credit) - 1
+                    line = ID + ', ' + str(Credit) + ', ' + Name + ', ' + Access + '\n'
                     submitDrink(drink)
                 else:
                     flash(f'No Credit', 'danger')
@@ -179,9 +172,55 @@ def drink(drinkName):
         return redirect(url_for('drinkMissing'))
     return render_template('menu.html', menu=Data.menu)
 
+@app.route("/menu/custom-drink", methods=['GET', 'POST'])
+def custom():
+    ingredientList = Data.ingredientList
+    form = AddressesForm(ingredients=ingredientList)
+    return render_template("custom.html", form=form)
+
+@app.route("/purchase/credits", methods=['GET', 'POST'])
+def buyCredit():
+    form = addCredits()
+    if form.ID.data:
+        generateAuth(form.adminID.data)
+        if checkAuth:
+            closeAuth()
+            usersIN = open(users, 'r')
+            usersOUT = open('Init/out.csv', 'w')
+            for line in usersIN:
+                if len(line) > 5:
+                    ID, Credit, Name, Access = line.split(', ')
+                    if form.ID.data == ID:
+                        Credit = int(Credit) + form.credit.data
+                    line = ID + ', ' + str(Credit) + ', ' + Name + ', ' + Access
+                    usersOUT.write(line)
+            usersIN.close()
+            usersOUT.close()
+            try:
+                os.remove(users)
+                os.rename('Init/out.csv', users)
+            except PermissionError:
+                print(users + 'is running in a higher process')
+            return redirect(url_for('menu'))
+    return render_template('register.html', form=form)
+
 @app.route("/missing")
 def drinkMissing():
     return render_template('missing.html')
+
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    form = newUser()
+    if form.ID.data:
+        generateAuth(form.adminID.data)
+        if checkAuth:
+            closeAuth()
+            usersIN = open(users, 'a')
+            line = form.ID.data + ', ' + str(form.credit.data) + ', ' + form.name.data + ', User\n'
+            usersIN.write(line)
+            usersIN.close()
+            return redirect(url_for('menu'))
+    return render_template('register.html', form=form)
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():

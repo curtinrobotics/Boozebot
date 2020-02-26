@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block content %}
+  <form method="POST", action="">
+    <p>
+      {{ form.ID.label }} {{ form.ID }}
+    </p>
+    <p>
+      {{ form.adminID.label }} {{ form.adminID }}
+    </p>
+    <p>
+      {{ form.credit.label }} {{ form.credit }}
+    </p>
+    <div>
+      {{ form.submit }}
+    </div>
+  </form>
+{% endblock content %}

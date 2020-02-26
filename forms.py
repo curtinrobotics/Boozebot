@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm, Form
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, BooleanField, FileField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, BooleanField, FileField, FormField, FieldList
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 
 #TODO: custom drink form, registration form implement, buy credits form implement
@@ -13,6 +13,15 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationE
 #    pumps = FileField('Pumps', validators=[DataRequired(), FileAllowed(['ini'])])
 #    confirm = BooleanField('Confirm Settings')
 #    submit = SubmitField('Upload')
+
+#custom drink
+class ingredientSelect(FlaskForm):
+    name = IntegerField()
+
+class customDrink(FlaskForm):
+    #A form for one or more addresses
+    ingredients = FieldList(FormField(IngredientSelect), min_entries=1)
+#custom drink
 
 class uploadMenu(Form):
     name = StringField('Menu Name', validators=[DataRequired(), Length(min=2, max=30)])
@@ -44,12 +53,12 @@ class adminLogin(FlaskForm):
 class addCredits(FlaskForm):
     ID = StringField('Student ID', validators=[DataRequired(), Length(min=2, max=30)])
     adminID = StringField('Admin ID', validators=[DataRequired(), Length(min=2, max=30)])
-    Credit = IntegerField('Credit', validators=[DataRequired()])
+    credit = IntegerField('Credit', validators=[DataRequired()])
     submit = SubmitField('Add Credits')
 
-class register(FlaskForm):
+class newUser(FlaskForm):
     ID = StringField('Student ID', validators=[DataRequired(), Length(min=2, max=30)])
-    Name = StringField('Name', validators=[DataRequired(), Length(min=2, max=30)])
+    name = StringField('Name', validators=[DataRequired(), Length(min=2, max=30)])
     adminID = StringField('Admin ID', validators=[DataRequired(), Length(min=2, max=30)])
-    Credit = IntegerField('Credit', validators=[DataRequired()])
+    credit = IntegerField('Credit', validators=[DataRequired()])
     submit = SubmitField('Add Credits')
