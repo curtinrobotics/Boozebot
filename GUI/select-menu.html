@@ -1,7 +1,9 @@
 {% extends "settings-layout.html" %}
 {% block settings %}
-  <h1>MENUS</h1>
+  <h2 class="page-heading">MENU-MENU</h2>
+  <ul class="menu menu-menu">
   {% for menu in list %}
-    <a href="/select/menu/{{ menu }}"><h3>{{ menu }}</h3></a>
+    <li class="menu-item"><a href="/select/menu/{{ menu }}">{{ menu }}</a></li
   {% endfor %}
+  </ul>
 {% endblock settings %}

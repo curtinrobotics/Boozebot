@@ -20,7 +20,7 @@ class ingredientSelect(FlaskForm):
 
 class customDrink(FlaskForm):
     #A form for one or more addresses
-    ingredients = FieldList(FormField(IngredientSelect), min_entries=1)
+    ingredients = FieldList(FormField(ingredientSelect), min_entries=1)
 #custom drink
 
 class uploadMenu(Form):

@@ -1,26 +1,29 @@
 {% extends "layout.html" %}
 {% block content %}
-  <h1>{{ drink.name }}</h1>
+  <h2 class="page-heading">{{ drink.name }}</h2>
   {% if session['OpenBar'] == False %}
-    <form method="POST", action="">
-      <p>
-        {{ form.ID.label }} {{ form.ID }}
-      </p>
-      <p>
-        {{ form.confirm }} {{ form.confirm.label }}
-      </p>
-      <div>
-        {{ form.submit }}
-      </div>
+    <form method="POST" action="">
+      <option>
+        <label>{{ form.ID.label }}</label>
+        <div class="input-text">{{ form.ID }}</div>
+      </option>
+
+      <option>
+        <div class="check-box confirm">{{ form.confirm }}</div>
+        <label>{{ form.confirm.label }}</label>
+      </option>
+
+      <div class="button submit">{{ form.submit }}</div>
     </form>
+
   {% else %}
-  <form method="POST", action="">
-    <p>
-      {{ form.confirm }} {{ form.confirm.label }}
-    </p>
-    <div>
-      {{ form.submit }}
-    </div>
+  <form method="POST" action="">
+    <option>
+      <div class="check-box confirm">{{ form.confirm }}</div>
+      <label>{{ form.confirm.label }}</label>
+    </option>
+
+    <div class="button submit">{{ form.submit }}</div>
   </form>
   {% endif %}
 {% endblock content %}

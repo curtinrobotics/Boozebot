@@ -2,10 +2,12 @@
 {% block content %}
   {% if session['Auth'] %}
     {% if session['Auth'] == True %}
-      <nav class=>
-        <a href="{{ url_for('newMenu') }}">Upload Menu</a>
-        <a href="{{ url_for('selectMenu') }}">Select Menu</a>
-        <a href="{{ url_for('setting') }}">Settings</a>
+      <nav class="menu settings-menu">
+        <ul>
+          <li class="nav-item"><a href="{{ url_for('newMenu') }}">Upload Menu</a></li>
+          <li class="nav-item"><a href="{{ url_for('selectMenu') }}">Select Menu</a></li>
+          <li class="nav-item"><a href="{{ url_for('setting') }}">Settings</a></li>
+        </ul>
       </nav>
       {% block settings %}{% endblock %}
     {% else %}

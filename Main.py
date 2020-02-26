@@ -61,7 +61,7 @@ def generateAuth(_ID):
                 if Access.strip('\n') == "Admin":
                     session['Auth'] = True
                 else:
-                    flash(f'No Admin Access', 'danger')
+                    flash('No Admin Access', 'danger')
     usersIN.close()
 
 def checkAuth():
@@ -81,7 +81,7 @@ def purchaseDrink(_ID, drink):
                     line = ID + ', ' + str(Credit) + ', ' + Name + ', ' + Access + '\n'
                     submitDrink(drink)
                 else:
-                    flash(f'No Credit', 'danger')
+                    flash('No Credit', 'danger')
             usersOUT.write(line)
     usersIN.close()
     usersOUT.close()
@@ -105,7 +105,6 @@ def saveFile(file, location, name='NULL'):
         print("Directory " , location,  " already exists")
     if name == 'NULL':
         name = file
-    print("hello" + str(file)) #bugtest
     fileIN = open(file, 'r')
     fileOUT = open(location + name, 'w')
     for line in fileIN:
@@ -120,7 +119,7 @@ def saveMenu(_menu, _ingredients, _pumps, name):
         if name in line:
             menuNNUM += 1
     if menuNUM > 0:
-        print(name + ' already exists. creating ' + name + str(menuNUM))
+        flash((name + ' already exists. creating ' + name + str(menuNUM)), 'danger')
         name = name + str(menuNUM)
     menusIN.close()
     menusOUT = open(menus, 'a')
@@ -172,12 +171,6 @@ def drink(drinkName):
         return redirect(url_for('drinkMissing'))
     return render_template('menu.html', menu=Data.menu)
 
-@app.route("/menu/custom-drink", methods=['GET', 'POST'])
-def custom():
-    ingredientList = Data.ingredientList
-    form = AddressesForm(ingredients=ingredientList)
-    return render_template("custom.html", form=form)
-
 @app.route("/purchase/credits", methods=['GET', 'POST'])
 def buyCredit():
     form = addCredits()
@@ -201,8 +194,9 @@ def buyCredit():
                 os.rename('Init/out.csv', users)
             except PermissionError:
                 print(users + 'is running in a higher process')
+            flash((str(Credit) + "'s purchased"), 'success')
             return redirect(url_for('menu'))
-    return render_template('register.html', form=form)
+    return render_template('credits.html', form=form)
 
 @app.route("/missing")
 def drinkMissing():
@@ -215,11 +209,23 @@ def register():
         generateAuth(form.adminID.data)
         if checkAuth:
             closeAuth()
-            usersIN = open(users, 'a')
-            line = form.ID.data + ', ' + str(form.credit.data) + ', ' + form.name.data + ', User\n'
-            usersIN.write(line)
+            usersIN = open(users, 'r')
+            exists = False
+            for line in usersIN:
+                if len(line) > 5:
+                    ID, Credit, Name, Access = line.split(', ')
+                    if ID == form.ID.data:
+                        exists = True
             usersIN.close()
-            return redirect(url_for('menu'))
+            if exists == False:
+                usersIN = open(users, 'a')
+                line = form.ID.data + ', ' + str(form.credit.data) + ', ' + form.name.data + ', User\n'
+                usersIN.write(line)
+                usersIN.close()
+                flash((form.ID.data + ' registered successfully'), 'success')
+                return redirect(url_for('menu'))
+            else:
+                flash((form.ID.data + ' has already registered'), 'danger')
     return render_template('register.html', form=form)
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -228,6 +234,7 @@ def login():
     if form.ID.data:
         generateAuth(form.ID.data)
         if checkAuth():
+            flash('logged in successfully', 'success')
             return redirect(url_for('setting'))
     return render_template('login.html', form=form, title='login')
 
@@ -281,7 +288,6 @@ def newMenu():
         absFilePath = form.location.data
         if absFilePath[-1] != '/':
             absFilePath = absFilePath + '/'
-        print(absFilePath) #bugtest
         menu = absFilePath + 'Menu.ini'
         ingredients = absFilePath + 'Ingredients.ini'
         pumps = absFilePath + 'Pumps.ini'

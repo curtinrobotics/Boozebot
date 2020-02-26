@@ -1,20 +1,28 @@
 {% extends "settings-layout.html" %}
 {% block settings %}
-<form method="POST", action="">
-  <p>
-    {{ form.openBar.label }} {{ form.openBar }}
-  </p>
-  <p>
-    {{ form.custom.label }} {{ form.custom }}
-  </p>
-  <p>
-    {{ form.adminOveride.label }} {{ form.adminOveride }}
-  </p>
-  <p>
-    {{ form.confirm.label }} {{ form.confirm }}
-  </p>
-  <div>
-    {{ form.submit }}
-  </div>
+<h2 class="page-heading">SETTINGS</h2>
+
+<form method="POST" action="">
+  <option>
+    <label>{{ form.openBar.label }}</label>
+    <div class="check-box">{{ form.openBar }}</div>
+  </option>
+
+  <option>
+    <label>{{ form.custom.label }}</label>
+    <div class="check-box">{{ form.custom }}</div>
+  </option>
+
+  <option>
+    <label>{{ form.adminOveride.label }}</label>
+    <div class="check-box">{{ form.adminOveride }}</div>
+  </option>
+
+  <option>
+    <div class="check-box confirm">{{ form.confirm }}</div>
+    <label>{{ form.confirm.label }}</label>
+  </option>
+
+  <div class="button submit">{{ form.submit }}</div>
 </form>
 {% endblock settings %}
