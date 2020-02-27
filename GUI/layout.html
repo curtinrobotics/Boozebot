@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% if title %}
+      <title>BoozeBot - {{ title }}</title>
+    {% else %}
+      <title>BoozeBot</title>
+    {% endif %}
+  </head>
+  <body>
+    <header>
+
+      <h1 id="site-heading"><a href="{{ url_for('home') }}">BoozeBot</a></h1>
+
+      <nav class="menu site-menu">
+        <menu class="menu page-menu">
+          <ul>
+            <li class="nav-item"><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="nav-item"><a href="{{ url_for('menu') }}">Menu</a></li>
+            <li class="nav-item"><a href="">About</a></li>
+          </ul>
+        </menu>
+        <!-- Sign in menu -->
+        <menu class="menu user-menu">
+          {% if  session['Auth'] %}
+            {% if session['Auth'] == True %}
+              <ul>
+                <li class="nav-item"><a href="{{ url_for('setting') }}">Settings</a></li>
+                <li class="nav-item"><a href="{{ url_for('logout') }}">Logout</a></li>
+              </ul>
+            {% else %}
+              <ul>
+                <li class="nav-item"><a href="{{ url_for('register') }}">Register</a></li>
+                <li class="nav-item"><a href="{{ url_for('buyCredit') }}">Buy Credits</a></li>
+                <li class="nav-item"><a href="{{ url_for('login') }}">Admin</a></li>
+              </ul>
+            {% endif %}
+          {% else %}
+            <ul>
+              <li class="nav-item"><a href="{{ url_for('register') }}">Register</a></li>
+              <li class="nav-item"><a href="{{ url_for('buyCredit') }}">Buy Credits</a></li>
+              <li class="nav-item"><a href="{{ url_for('login') }}">Admin</a></li>
+            </ul>
+          {% endif %}
+        </menu>
+      </nav>
+    </header>
+
+    <section id="popup-messages">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="popup-text">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </section>
+
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+
+    </footer>
+  </body>
+</html>

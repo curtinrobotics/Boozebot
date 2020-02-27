@@ -1,0 +1,6 @@
+{% extends "layout.html" %}
+{% block content %}
+  {% for ingredient in form.ingredients %}
+    {{ ingredient.hidden_tag() }}
+  {% endfor %}
+{% endblock content %}

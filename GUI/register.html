@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h2 class="page-heading">REGISTER</h2>
+
+  <form method="POST" action="">
+    <option>
+      <label>{{ form.ID.label }}</label>
+      <div class="input-text">{{ form.ID }}</div>
+    </option>
+
+    <option>
+      <label>{{ form.name.label }}</label>
+      <div class="input-text">{{ form.name }}</div>
+    </option>
+
+    <option>
+      <label>{{ form.adminID.label }}</label>
+      <div class="input-text">{{ form.adminID }}</div>
+    </option>
+
+    <option>
+      <label>{{ form.credit.label }}</label>
+      <div class="input-text">{{ form.credit }}</div>
+    </option>
+
+    <div class="button submit">{{ form.submit }}</div>
+  </form>
+{% endblock content %}
