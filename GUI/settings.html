@@ -4,25 +4,25 @@
 
 <form method="POST" action="">
   <option>
-    <label>{{ form.openBar.label }}</label>
-    <div class="check-box">{{ form.openBar }}</div>
+    {{ form.openBar.label }}
+    {{ form.openBar(class_="check-box") }}
   </option>
 
   <option>
-    <label>{{ form.custom.label }}</label>
-    <div class="check-box">{{ form.custom }}</div>
+    {{ form.custom.label }}
+    {{ form.custom(class_="check-box") }}
   </option>
 
   <option>
-    <label>{{ form.adminOveride.label }}</label>
-    <div class="check-box">{{ form.adminOveride }}</div>
+    {{ form.adminOveride.label }}
+    {{ form.adminOveride(class_="check-box") }}
   </option>
 
   <option>
-    <div class="check-box confirm">{{ form.confirm }}</div>
-    <label>{{ form.confirm.label }}</label>
+    {{ form.confirm(class_="check-box confirm") }}
+    {{ form.confirm.label }}
   </option>
 
-  <div class="button submit">{{ form.submit }}</div>
+  {{ form.submit(class_="button submit") }}
 </form>
 {% endblock settings %}

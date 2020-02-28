@@ -7,22 +7,22 @@
     {% else %}
     <form method="POST" action="" id="login-form">
       <option>
-        <label>{{ form.ID.label }}</label>
-        <div class="input-text">{{ form.ID }}</div>
+        {{ form.ID.label }}
+        {{ form.ID(class_="input-text") }}
       </option>
 
-      <div class="button submit">{{ form.submit }}</div>
+      {{ form.submit(class_="button submit") }}
     </form>
     {% endif %}
 
   {% else %}
   <form method="POST" action="" id="login-form">
     <option>
-      <label>{{ form.ID.label }}</label>
-      <div class="input-text">{{ form.ID }}</div>
+      {{ form.ID.label }}
+      {{ form.ID(class_="input-text") }}
     </option>
 
-    <div class="button submit">{{ form.submit }}</div>
+    {{ form.submit(class_="button submit") }}
   </form>
   {% endif %}
 {% endblock content %}

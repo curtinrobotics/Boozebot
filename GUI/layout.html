@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link type="text/css" rel="stylesheet" href="Standard.css">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
     {% if title %}
       <title>BoozeBot - {{ title }}</title>
     {% else %}
@@ -8,6 +10,7 @@
     {% endif %}
   </head>
   <body>
+
     <header>
 
       <h1 id="site-heading"><a href="{{ url_for('home') }}">BoozeBot</a></h1>
