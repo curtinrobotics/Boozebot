@@ -8,8 +8,9 @@
         {{ form.ID(class_="input-text") }}
       </option>
 
-      <option>
+      <option class="check-container">
         {{ form.confirm(class_="check-box confirm") }}
+        <span class="checkmark"></span>
         {{ form.confirm.label }}
       </option>
 
@@ -18,8 +19,9 @@
 
   {% else %}
   <form method="POST" action="">
-    <option>
+    <option class="check-container">
       {{ form.confirm(class_="check-box confirm") }}
+      <span class="checkmark"></span>
       {{ form.confirm.label }}
     </option>
 

@@ -141,7 +141,7 @@ initializeMenu()
 @app.route("/")
 def home():
     startSession()
-    return render_template('home.html')
+    return redirect(url_for('setting'))
 
 @app.route("/menu")
 def menu():

@@ -3,23 +3,27 @@
 <h2 class="page-heading">SETTINGS</h2>
 
 <form method="POST" action="">
-  <option>
+  <option class="check-container">
     {{ form.openBar.label }}
+    <span class="checkmark"></span>
     {{ form.openBar(class_="check-box") }}
   </option>
 
-  <option>
+  <option class="check-container">
     {{ form.custom.label }}
+    <span class="checkmark"></span>
     {{ form.custom(class_="check-box") }}
   </option>
 
-  <option>
+  <option class="check-container">
     {{ form.adminOveride.label }}
+    <span class="checkmark"></span>
     {{ form.adminOveride(class_="check-box") }}
   </option>
 
-  <option>
+  <option class="check-container">
     {{ form.confirm(class_="check-box confirm") }}
+    <span class="checkmark"></span>
     {{ form.confirm.label }}
   </option>
 
