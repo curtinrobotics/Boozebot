@@ -50,6 +50,7 @@ def updateIngredientList(file_name):
 
 #updates the menu and recipe instructions
 def updateMenu(file_name):
+    Data.menu.clear()
     file = open(file_name, 'r')
     for line in file:
         #splits the recipe info apart

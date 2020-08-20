@@ -1,47 +1,42 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='Themes/Standard.css') }}">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Permanent+Marker&display=swap" rel="stylesheet">
     {% if title %}
       <title>BoozeBot - {{ title }}</title>
     {% else %}
       <title>BoozeBot</title>
     {% endif %}
   </head>
+
+
+
   <body>
+
     <header>
-
-      <h1 id="site-heading"><a href="{{ url_for('home') }}">BoozeBot</a></h1>
-
       <nav class="menu site-menu">
-        <menu class="menu page-menu">
+        <h1 id="site-heading"><a href="{{ url_for('home') }}">BoozeBot</a></h1>
+        <menu>
           <ul>
-            <li class="nav-item"><a href="{{ url_for('home') }}">Home</a></li>
-            <li class="nav-item"><a href="{{ url_for('menu') }}">Menu</a></li>
-            <li class="nav-item"><a href="">About</a></li>
-          </ul>
-        </menu>
-        <!-- Sign in menu -->
-        <menu class="menu user-menu">
-          {% if  session['Auth'] %}
-            {% if session['Auth'] == True %}
-              <ul>
-                <li class="nav-item"><a href="{{ url_for('setting') }}">Settings</a></li>
-                <li class="nav-item"><a href="{{ url_for('logout') }}">Logout</a></li>
-              </ul>
+            <a href="{{ url_for('home') }}"><li id="Setup">Setup</li></a>
+            <a href="{{ url_for('menu') }}"><li id="Menu">Menu</li></a>
+            {% if  session['Auth'] %}
+              {% if session['Auth'] == True %}
+                  <a href="{{ url_for('setting') }}"><li id="Settings">Settings</li></a>
+                  <a href="{{ url_for('logout') }}"><li id="Logout">Logout</li></a>
+              {% else %}
+                  <a href="{{ url_for('register') }}"><li id="Register">Register</li></a>
+                  <a href="{{ url_for('buyCredit') }}"><li id="Buy-Credits">Credits</li></a>
+                  <a href="{{ url_for('login') }}"><li id="Admin">Admin</li></a>
+              {% endif %}
             {% else %}
-              <ul>
-                <li class="nav-item"><a href="{{ url_for('register') }}">Register</a></li>
-                <li class="nav-item"><a href="{{ url_for('buyCredit') }}">Buy Credits</a></li>
-                <li class="nav-item"><a href="{{ url_for('login') }}">Admin</a></li>
-              </ul>
+                <a href="{{ url_for('register') }}"><li id="Register">Register</li></a>
+                <a href="{{ url_for('buyCredit') }}"><li id="Buy-Credits">Credits</li></a>
+                <a href="{{ url_for('login') }}"><li id="Admin">Admin</li></a>
             {% endif %}
-          {% else %}
-            <ul>
-              <li class="nav-item"><a href="{{ url_for('register') }}">Register</a></li>
-              <li class="nav-item"><a href="{{ url_for('buyCredit') }}">Buy Credits</a></li>
-              <li class="nav-item"><a href="{{ url_for('login') }}">Admin</a></li>
-            </ul>
-          {% endif %}
+          </ul>
         </menu>
       </nav>
     </header>
@@ -59,7 +54,9 @@
     </section>
 
     <main>
-      {% block content %}{% endblock %}
+      <article>
+        {% block content %}{% endblock %}
+      </article>
     </main>
 
     <footer>

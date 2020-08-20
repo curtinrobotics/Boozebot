@@ -4,25 +4,25 @@
 
   <form method="POST" action="">
     <option>
-      <label>{{ form.ID.label }}</label>
-      <div class="input-text">{{ form.ID }}</div>
+      {{ form.ID.label }}
+      {{ form.ID(class_="input-text") }}
     </option>
 
     <option>
-      <label>{{ form.name.label }}</label>
-      <div class="input-text">{{ form.name }}</div>
+      {{ form.name.label }}
+      {{ form.name(class_="input-text") }}
     </option>
 
     <option>
-      <label>{{ form.adminID.label }}</label>
-      <div class="input-text">{{ form.adminID }}</div>
+      {{ form.adminID.label }}
+      {{ form.adminID(class_="input-text") }}
     </option>
 
     <option>
-      <label>{{ form.credit.label }}</label>
-      <div class="input-text">{{ form.credit }}</div>
+      {{ form.credit.label }}
+      {{ form.credit(class_="input-text") }}
     </option>
 
-    <div class="button submit">{{ form.submit }}</div>
+    {{ form.submit(class_="button submit") }}
   </form>
 {% endblock content %}

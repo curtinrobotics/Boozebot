@@ -95,7 +95,7 @@ def submitDrink(drink='NULL'):
     print(drink)
     Data.menu[drink].setRecipeVolume()
     Data.menu[drink].setRecipeInstructions()
-    Arduino.sendDrink(Data.menu[drink].recipeInstructions, "/dev/tty.usbmodem142101")
+    Arduino.sendDrink(Data.menu[drink].recipeInstructions)
 
 def saveFile(file, location, name='NULL'):
     try:
@@ -141,7 +141,7 @@ initializeMenu()
 @app.route("/")
 def home():
     startSession()
-    return render_template('home.html')
+    return redirect(url_for('setting'))
 
 @app.route("/menu")
 def menu():

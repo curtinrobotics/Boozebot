@@ -1,0 +1,143 @@
+/*
+colour palette
+#7fa998
+#f1f1b0
+#df8543
+#9d2503
+*/
+
+body {
+  font-family: 'Quicksand', sans-serif;
+  background-color: #505160;
+  margin: 0px;
+}
+
+header {
+
+}
+
+main {
+  background-image: url("Theme-Images/BarStools.jpg");
+  background-size: 1500px 750px;
+  margin-top: 1%;
+  margin-left: 1%;
+  margin-right: 1%;
+  width: 98%;
+  min-height: 750px;
+  text-align: center;
+}
+
+footer {
+
+}
+
+h1#site-heading a:link, h1#site-heading a:visited {
+  display: inline-block;
+  font-family: 'Permanent Marker', sans-serif;
+  color: #9D2503;
+  margin-left: 50px;
+}
+
+.page-heading {
+  font-family: 'Permanent Marker', sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+a:hover {
+
+}
+
+nav.site-menu {
+  position: fixed;
+  top: 140px;
+  left: 85%;
+  background-color: white;
+  height: 100%;
+  width: 30%;
+}
+
+nav.site-menu menu ul li {
+  height: 20px;
+  width: 60px;
+  list-style-type: none;
+  padding-top: 10px;
+  padding-right: 30px;
+  padding-bottom: 10px;
+  padding-left: 30px;
+  text-align: center;
+  color: black;
+}
+
+nav.site-menu menu ul li:hover {
+  background-color: gray;
+  color: black;
+}
+
+.settings-menu {
+  background-color: white;
+  width: 30%;
+}
+
+.nav-item {
+  display: inline-block;
+  list-style-type: none;
+  height: 30px;
+  width: 40px;
+  padding-top: 10px;
+  padding-right: 30px;
+  padding-bottom: 10px;
+  padding-left: 30px;
+}
+
+.nav-item:hover {
+  color: gray;
+}
+
+article {
+  background-color: rgba(255, 255, 255, 0.75);
+  padding-top: 10px;
+  margin-left: 3%;
+  margin-right: 3%;
+  width: 94%;
+  min-height: 600px;
+}
+
+input[type=text] {
+  width: 50%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border: 2px solid;
+  background: white;
+}
+
+input[type=text]:focus {
+  background-color: lightblue;
+}
+
+.drinks-menu {
+  width: 80%;
+}
+
+.menu-menu {
+  width: 80%;
+}
+
+.menu-item {
+  display: inline-block;
+  list-style-type: none;
+  margin: 10px;
+  padding: 20px 20px;
+  width: 200px;
+  background-color: white;
+  border-radius: 20px;
+}
+
+.menu-item:hover {
+  background-color: gray;
+}

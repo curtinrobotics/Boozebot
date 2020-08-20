@@ -4,9 +4,9 @@
     {% if session['Auth'] == True %}
       <nav class="menu settings-menu">
         <ul>
-          <li class="nav-item"><a href="{{ url_for('newMenu') }}">Upload Menu</a></li>
-          <li class="nav-item"><a href="{{ url_for('selectMenu') }}">Select Menu</a></li>
-          <li class="nav-item"><a href="{{ url_for('setting') }}">Settings</a></li>
+          <a href="{{ url_for('newMenu') }}"><li class="nav-item">Upload Menu</li></a>
+          <a href="{{ url_for('selectMenu') }}"><li class="nav-item">Select Menu</li></a>
+          <a href="{{ url_for('setting') }}"><li class="nav-item">Settings</li></a>
         </ul>
       </nav>
       {% block settings %}{% endblock %}
