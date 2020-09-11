@@ -97,7 +97,7 @@ def submitDrink(drink='NULL'):
     print(drink)
     Data.menu[drink].setRecipeVolume()
     Data.menu[drink].setRecipeInstructions()
-    VirtualQueue.Arduino.queue.put(Data.menu[drink].recipeInstructions)
+    ArduinoQueue.queue.put(Data.menu[drink].recipeInstructions)
 
 def saveFile(file, location, name='NULL'):
     try:
@@ -297,6 +297,6 @@ def newMenu():
 
 if __name__ == '__main__':
     initializeMenu()
-    ArduinoThread = VirtualQueue.Arduino(drinkQueue)
-    VirtualQueue.Arduino.start()
+    ArduinoQueue = VirtualQueue.ArduinoThread(drinkQueue)
+    ArduinoQueue.start()
     app.run(debug=True)

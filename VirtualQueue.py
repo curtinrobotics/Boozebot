@@ -3,7 +3,7 @@ import time
 import Arduino
 from Queue import Queue
 
-class Arduino(threading.Thread):
+class ArduinoThread(threading.Thread):
     def __init__(self, queue):
         threading.Thread.__init__(self)
         self.queue = queue
