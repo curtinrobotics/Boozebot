@@ -38,7 +38,7 @@ class adminSettings(FlaskForm):
     submit = SubmitField('Continue')
 
 class buyDrink(FlaskForm):
-    ID = StringField('Student ID', validators=[DataRequired(), Length(min=2, max=30)])
+    ID = getID()
     confirm = BooleanField('Confirm Order')
     submit = SubmitField('Continue')
 
@@ -47,17 +47,17 @@ class confirmOrder(FlaskForm):
     submit = SubmitField('Continue')
 
 class adminLogin(FlaskForm):
-    ID = StringField('Student ID', validators=[DataRequired(), Length(min=2, max=30)])
+    ID = getID()
     submit = SubmitField('Login')
 
 class addCredits(FlaskForm):
-    ID = StringField('Student ID', validators=[DataRequired(), Length(min=2, max=30)])
+    ID = getID()
     adminID = StringField('Admin ID', validators=[DataRequired(), Length(min=2, max=30)])
     credit = IntegerField('Credit', validators=[DataRequired()])
     submit = SubmitField('Add Credits')
 
 class newUser(FlaskForm):
-    ID = StringField('Student ID', validators=[DataRequired(), Length(min=2, max=30)])
+    ID = getID()
     name = StringField('Name', validators=[DataRequired(), Length(min=2, max=30)])
     adminID = StringField('Admin ID', validators=[DataRequired(), Length(min=2, max=30)])
     credit = IntegerField('Credit', validators=[DataRequired()])
