@@ -1,12 +1,12 @@
 import serial #imports pyserial library
+import time
 
 #sends a new drink request
 def sendDrink(instructions):
     try:
-        send = serial.Serial() #initialises serial port
-        send.baudrate = 9600
-        send.port = 'COM3' #sets aurduino com port
-        send.write('N'.encode())
+        send = serial.Serial('COM3', 9600) #initialises serial port
+        time.sleep(2) #waits for arduino boot, can possibly be shorter
+        pumpString = ""
         for pump in instructions:
             if pump < 10:
                 pumpString += '0' + str(pump) #makes all digits 2 digits
