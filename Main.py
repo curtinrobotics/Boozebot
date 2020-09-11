@@ -11,6 +11,7 @@ import Data #imports the data file
 import Update #imports the Dataupdate function set
 import Arduino #imports Arduino communication library
 from functools import partial
+import VirtualQueue
 
 #flask
 from PIL import Image
@@ -23,6 +24,10 @@ app = Flask(__name__, template_folder="GUI", static_url_path="/GUI", static_fold
 
 app.config['SECRET_KEY'] = '5791628bb0b13ceh98dfjk7lp76dfde280ba245'
 
+users = "Init/Users.csv"
+menus = "Init/Menu.csv"
+drinkQueue = Queue()
+
 #Updates all data from files
 def initializeMenu(InitFile="Standard"):
     Update.updateCupType('Init/Cups.ini') #updates the cup volume list
@@ -30,9 +35,6 @@ def initializeMenu(InitFile="Standard"):
     Update.updateIngredientPump('Init/' + InitFile + '/Pumps.ini') #updates the ingredient pumps
     Update.updateIngredientList('Init/' + InitFile + '/Ingredients.ini') #updates a list of available ingredients
     Update.updateMenu('Init/' + InitFile + '/Menu.ini') #updates the menu and recipe instructions
-
-users = "Init/Users.csv"
-menus = "Init/Menu.csv"
 
 def startSession():
     try:
@@ -95,7 +97,7 @@ def submitDrink(drink='NULL'):
     print(drink)
     Data.menu[drink].setRecipeVolume()
     Data.menu[drink].setRecipeInstructions()
-    Arduino.sendDrink(Data.menu[drink].recipeInstructions)
+    VirtualQueue.Arduino.queue.put(Data.menu[drink].recipeInstructions)
 
 def saveFile(file, location, name='NULL'):
     try:
@@ -134,8 +136,6 @@ def saveMenu(_menu, _ingredients, _pumps, name):
     saveFile(_menu, location, 'Menu.ini')
     saveFile(_ingredients, location, 'Ingredients.ini')
     saveFile(_pumps, location, 'Pumps.ini')
-
-initializeMenu()
 
 @app.route("/home")
 @app.route("/")
@@ -296,4 +296,7 @@ def newMenu():
     return render_template('upload-menu.html', form=form, title='settings')
 
 if __name__ == '__main__':
+    initializeMenu()
+    ArduinoThread = VirtualQueue.Arduino(drinkQueue)
+    VirtualQueue.Arduino.start()
     app.run(debug=True)

@@ -2,7 +2,7 @@ import serial #imports pyserial library
 import time
 
 #sends a new drink request
-def sendDrink(instructions, exitKey='exit'):
+def sendDrink(instructions, exitKey='exit', blockSize=10):
     exit = False
     try:
         arduino = serial.Serial('COM3', 9600) #initialises serial port
@@ -10,7 +10,7 @@ def sendDrink(instructions, exitKey='exit'):
         pumpString = ""
 
         for pump in instructions:
-            if pump < 10:
+            if pump < blockSize:
                 pumpString += '0' + str(pump) #makes all digits 2 digits
             else:
                 pumpString += str(pump) #combines pumps to send
