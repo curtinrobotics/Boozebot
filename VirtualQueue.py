@@ -1,7 +1,7 @@
 import threading
 import time
 import Arduino
-from Queue import Queue
+from queue import Queue
 
 class ArduinoThread(threading.Thread):
     def __init__(self, queue):
@@ -11,7 +11,7 @@ class ArduinoThread(threading.Thread):
         self.drinkCount = 0
 
     def run(self):
-        print(threading.currentThread().getName() + "starting")
+        print(threading.currentThread().getName() + " starting")
         while True:
             drink = self.queue.get()
             self.ServeDrink(drink)
