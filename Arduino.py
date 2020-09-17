@@ -17,7 +17,7 @@ def sendDrink(instructions, exitKey='exit', blockSize=10):
         arduino.write(str(pumpString).encode())
 
         while exit != True:
-            command = arduino.readline().strip('\n')
+            command = arduino.readline(arduino.inWaiting()).strip('\n')
             print(command)
             if command == exitKey:
                 exit = True
