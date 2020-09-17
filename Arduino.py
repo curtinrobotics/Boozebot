@@ -7,6 +7,8 @@ def sendDrink(instructions, exitKey='exit', blockSize=10):
     try:
         arduino = serial.Serial('COM3', 9600) #initialises serial port
         time.sleep(2) #waits for arduino boot, can possibly be shorter
+        ser.flushInput()
+
         pumpString = ""
 
         for pump in instructions:
@@ -16,9 +18,14 @@ def sendDrink(instructions, exitKey='exit', blockSize=10):
                 pumpString += str(pump) #combines pumps to send
         arduino.write(str(pumpString).encode())
 
+        ser.flushInput()
         while exit != True:
-            command = arduino.readline(arduino.inWaiting()).strip('\n')
-            print(command)
+            try:
+                command = arduino.readline(arduino.inWaiting())
+                decoded_command = float(command[0:len(command)-2].decode("utf-8")).strip('\n')
+                print(decoded_bytes)
+            except:
+                print("Keyboard Interrupt")
             if command == exitKey:
                 exit = True
         return True
