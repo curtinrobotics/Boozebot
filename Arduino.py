@@ -17,10 +17,10 @@ def sendDrink(instructions, exitKey='exit', blockSize=10):
         arduino.write(str(pumpString).encode())
 
         while exit != True:
-            command = arduino.readline()
+            command = arduino.readline().strip('\n')
+            print(command)
             if command == exitKey:
                 exit = True
-            time.sleep(0.1)
         return True
     except FileNotFoundError:
         print("Serial port not found, may need to manually change com port")
