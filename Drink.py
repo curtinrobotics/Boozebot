@@ -76,9 +76,13 @@ class Drink:
 
     #converts Recipevolume to Recipe RecipeInstructions and assigns it
     def setRecipeInstructions(self):
-        for ingredient in self.drinkIngredients:
-            pump = Data.ingredientPump[ingredient]
-            self.recipeInstructions[pump] = self.recipeVolume[ingredient] / Data.MLperS
+        pumpNum = 0
+        pump = Data.ingredientPump[ingredient]
+        if pumpNum >= Data.ParastalticNum:
+            self.recipeInstructions[pump] = self.recipeVolume[ingredient] / Data.ParastalticMLperS
+        elif pumpNum >= Data.SolenoidNum:
+            self.recipeInstructions[pump] = self.recipeVolume[ingredient] / Data.SolenoidMLperS
+        pumpNum += 1
         return 0
 
     #gets the amount of standard drinks

@@ -1,39 +1,56 @@
 /*
-runTime for stepper motors should be calculated based on the maximum flowrate of steppers.
+runTime for parastaltic pumps should be calculated based on the maximum flowrate of parastaltics.
 This program will ensure the same volume as maximum flow rate by accounting for acceleration time.
-Because of this you may notice a difference between the runtime you send and the actuall runtime of the steppers but volume will always be the same as if run at max speed.
+Because of this you may notice a difference between the runtime you send and the actuall runtime of the parastaltics but volume will always be the same as if run at max speed.
 */
 
 /*defines pump numbers*/
-#define STEPPERNUM 4
+#define PARASTALTICNUM 4
 #define SOLENOIDNUM 4
 #define PUMPNUM 12
 
 /*defines the first pins to be assigned*/
-#define STEPSTART 4
-#define SOLENOIDSTART 12
+#define PARASTART 7
+#define SOLENOIDSTART (PARASTART + (2*PARASTALTICNUM))
 
 /*defines speed of parastaltics*/
 #define PERIOD 170
+#define CIRCUMFRENCE 100
 
 /*function pre-declaration*/
-void InitStepperPins(int stepperArray[STEPPERNUM][2]);
-int acceleration(int initial, int last, int increment, int stepPin);
-void constant(long int runtime, int period, int stepPin);
+void InitParastalticPins(int ParastalticArray[PARASTALTICNUM][2]);
+void InitSolenoidPins(int solenoidArray[SOLENOIDNUM]);
+int accelerationStepper(int initial, int last, int increment, int stepPin);
+void constantStepper(long int runtime, int period, int stepPin);
 void ArrayToZero(int *list, int len);
 String GetSerialString();
 void SerialInterperate(String serialIn, int *pumpTimeS);
 long int pumpTimeToRunLoop(int pumpTime, int period);
-void startup(int period, int runTime, int stepper);
+long int distanceToRunLoop(int distance);
+void startupLinearRail(int period, int distance, int dir, int *LinearRail);
+void startupParastaltic(int period, int runTime, int parastaltic);
+void runSolenoid(int pumpTime, int solenoid);
 
 const int butPin = 2; /*button interupt, safety function*/
-int stepperArray[STEPPERNUM][2]; /*array of stepper motors pumps, each index is stepPin|directionPin*/
+const int endStop1 = 3;
+const int endStop2 = 4;
+const int linearRail[2] = {5, 6};
+int parastalticArray[PARASTALTICNUM][2]; /*array of parastaltic motors pumps, each index is stepPin|directionPin*/
+int solenoidArray[SOLENOIDNUM];
 static int broken = 0;
 
 void setup()
 {
-  InitStepperPins(stepperArray); /*sets all parastaltic pins*/
+  InitParastalticPins(parastalticArray); /*sets all parastaltic pins*/
+  InitSolenoidPins(solenoidArray); /*sets all solenoid pins*/
+  /*sets linearRail pins*/
+  pinMode(linearRail[0],OUTPUT); /*step pin*/
+  pinMode(linearRail,OUTPUT); /*direction pin*/
   pinMode(butPin,CHANGE);
+  attachInterrupt(0, InterruptFunction, CHANGE);
+  pinMode(endStop1,CHANGE);
+  attachInterrupt(0, InterruptFunction, CHANGE);
+  pinMode(endStop2,CHANGE);
   attachInterrupt(0, InterruptFunction, CHANGE);
   Serial.begin(9600);
 }
@@ -42,9 +59,9 @@ void loop()
 {
   String serialIn = "000000000000000000000000";
   int pumpTimeS[PUMPNUM];
-  for(int stepper=0;stepper<STEPPERNUM;stepper++)
+  for(int parastaltic=0;parastaltic<PARASTALTICNUM;parastaltic++)
   {
-    digitalWrite(stepperArray[stepper][1], HIGH); /*sets parastaltics direction*/
+    digitalWrite(parastalticArray[parastaltic][1], HIGH); /*sets parastaltics direction*/
   }
   ArrayToZero(pumpTimeS, PUMPNUM); /*sets all run times to zero for safety*/
   serialIn = GetSerialString(); /*gets instructions from serial*/
@@ -52,56 +69,118 @@ void loop()
   SerialInterperate(serialIn, pumpTimeS); /*interperates instructions from serial*/
 
   /*runs parastaltics according to instructions*/
-  for (int ii=0;ii<STEPPERNUM;ii++)
+  startupLinearRail(PERIOD, 1000, HIGH, linearRail);
+  for (int ii=0;ii<PARASTALTICNUM;ii++)
   {
-    startup(PERIOD, pumpTimeS[ii], ii);
+    startupParastaltic(PERIOD, pumpTimeS[ii], ii);
     Serial.println(pumpTimeS[ii]);
   }
-  Serial.println("exit");
+  startupLinearRail(PERIOD, 500, LOW, linearRail);
+  for (int ii=0;ii<SOLENOIDNUM;ii++)
+  {
+    runSolenoid(pumpTimeS[PARASTALTICNUM + ii], solenoidArray[ii]);
+    Serial.println(pumpTimeS[PARASTALTICNUM + ii]);
+  }
+  startupLinearRail(PERIOD, 500, LOW, linearRail);
+  Serial.println("Done Order");
  }
 
-/*inititialises all stepper motor pins*/
-void InitStepperPins(int stepperArray[STEPPERNUM][2])
+/*inititialises all parastaltic pump pins*/
+void InitSolenoidPins(int solenoidArray[SOLENOIDNUM])
 {
-  int pinNumber = STEPSTART;
+  int pinNumber = SOLENOIDSTART;
 
   /*assigns pins to motor*/
-  for(int stepper=0;stepper<STEPPERNUM;stepper++)
+  for(int solenoid=0;solenoid<SOLENOIDNUM;solenoid++)
+  {
+    solenoidArray[solenoid] = pinNumber;
+    pinNumber++;
+  }
+
+  /*sets pins as OUTPUT*/
+  for(int solenoid=0;solenoid<SOLENOIDNUM;solenoid++)
+  {
+    pinMode(solenoidArray[solenoid],OUTPUT); /*step pin*/
+  }
+}
+
+/*inititialises all parastaltic pump pins*/
+void InitParastalticPins(int parastalticArray[PARASTALTICNUM][2])
+{
+  int pinNumber = PARASTART;
+
+  /*assigns pins to motor*/
+  for(int parastaltic=0;parastaltic<PARASTALTICNUM;parastaltic++)
   {
     for(int pin=0;pin<2;pin++)
     {
-      stepperArray[stepper][pin] = pinNumber;
+      parastalticArray[parastaltic][pin] = pinNumber;
       pinNumber++;
     }
   }
 
   /*sets pins as OUTPUT*/
-  for(int stepper=0;stepper<STEPPERNUM;stepper++)
+  for(int parastaltic=0;parastaltic<PARASTALTICNUM;parastaltic++)
   {
-    pinMode(stepperArray[stepper][0],OUTPUT); /*step pin*/
-    pinMode(stepperArray[stepper][1],OUTPUT); /*direction pin*/
+    pinMode(parastalticArray[parastaltic][0],OUTPUT); /*step pin*/
+    pinMode(parastalticArray[parastaltic][1],OUTPUT); /*direction pin*/
   }
 }
 
-/*starts and runs stepper motors for correct time*/
-void startup(int period, int pumpTime, int stepper)
+/*starts and runs parastaltic pumps for correct time*/
+void startupParastaltic(int period, int pumpTime, int parastaltic)
 {
   int stage = 0; /*0=accellerating,!0=running*/
   static int accelIncrement = 25;
   static int initialPeriod = 1000; /*start point of accelleration, should be larger than endpoint*/
-  long int runLoop = pumpTimeToRunLoop(pumpTime, period); /*amount of turns required by stepper motor*/
+  long int runLoop = pumpTimeToRunLoop(pumpTime, period); /*amount of turns required by parastaltic pump*/
   Serial.println(runLoop);
   if(stage==0)
   {
-    runLoop = runLoop - acceleration(initialPeriod, period, accelIncrement, stepperArray[stepper][0]); /*accounts for loops used by acceleration stage*/
+    runLoop = runLoop - accelerationStepper(initialPeriod, period, accelIncrement, parastalticArray[parastaltic][0]); /*accounts for loops used by acceleration stage*/
     stage++;
   }
   Serial.println(runLoop);
-  constant(runLoop, period, stepperArray[stepper][0]);
+  constantStepper(runLoop, period, parastalticArray[parastaltic][0]);
 }
 
-/*accelerates stepper motor to desired speed*/
-int acceleration(int initial, int last, int increment, int stepPin)
+/*starts and runs parastaltic pumps for correct time*/
+void runSolenoid(int pumpTime, int solenoid)
+{
+  if(broken == 0)
+  {
+    digitalWrite(solenoid, HIGH);
+    delay(pumpTime*1000);
+    digitalWrite(solenoid, LOW);
+  }
+  /*if(reading != LOW)
+  {
+    exit;
+  }*/
+}
+
+/*starts and runs Linear Rail for correct distance in mm*/
+void startupLinearRail(int period, int distance, int dir, int *stepper)
+{
+  int stage = 0; /*0=accellerating,!0=running*/
+  static int accelIncrement = 25;
+  static int initialPeriod = 1000; /*start point of accelleration, should be larger than endpoint*/
+  int stepPin = stepper[0];
+  int dirPin = stepper[1];
+  long int runLoop = distanceToRunLoop(distance); /*amount of turns required by parastaltic pump*/
+  Serial.println(runLoop);
+  digitalWrite(dirPin,dir);
+  if(stage==0)
+  {
+    runLoop = runLoop - accelerationStepper(initialPeriod, period, accelIncrement, stepPin); /*accounts for loops used by acceleration stage*/
+    stage++;
+  }
+  Serial.println(runLoop);
+  constantStepper(runLoop, period, stepPin);
+}
+
+/*accelerates parastaltic pump to desired speed*/
+int accelerationStepper(int initial, int last, int increment, int stepPin)
 {
   /*combine runLoop and increment for acceleration smoothness*/
   int runLoop = 100; /* how many loops is one acceleration step*/
@@ -129,8 +208,8 @@ int acceleration(int initial, int last, int increment, int stepPin)
   return LoopCount; /*returns loosp done by acceleration*/
 }
 
-/*runs stepper motor to desired speed*/
-void constant(long int runLoop, int period, int stepPin)
+/*runs parastaltic pump to desired speed*/
+void constantStepper(long int runLoop, int period, int stepPin)
 {
   /*int reading = digitalRead(butPin);*/
 
@@ -202,7 +281,7 @@ String GetSerialString()
   return serialIn;
 }
 
-/*converts pumpTime in seconds to number of loop turns from stepper motor*/
+/*converts pumpTime in seconds to number of loop turns from parastaltic pump*/
 long int pumpTimeToRunLoop(int pumpTime, int period)
 {
   float temp = (1000/(2*(float)period));
@@ -211,6 +290,16 @@ long int pumpTimeToRunLoop(int pumpTime, int period)
   long int runLoop;
   runTime = 1000*pumpTime;
   runLoop = (float)runTime*temp;
+  return runLoop;
+}
+
+/*converts pumpTime in seconds to number of loop turns from parastaltic pump*/
+long int distanceToRunLoop(int distance)
+{
+  float turns = distance/CIRCUMFRENCE;
+  Serial.println(turns);
+  long int runLoop;
+  runLoop = (float)4*turns;
   return runLoop;
 }
 
