@@ -5,7 +5,10 @@
 #Created: 10/04/2019
 
 #Constants:
-MLperS = 1 #ml per second of the pump
+ParastalticNum = 4
+SolenoidNum = 4
+ParastalticMLperS = 1 #ml per second of the pump
+SolenoidMLperS = 10 #ml per second of the pump
 stndDrink = 21 #ml alcohol in a standard drink
 
 #Updateable:
