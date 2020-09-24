@@ -57,7 +57,7 @@ void loop()
     startup(PERIOD, pumpTimeS[ii], ii);
     Serial.println(pumpTimeS[ii]);
   }
-  Serial.println("Done Order");
+  Serial.println("exit");
  }
 
 /*inititialises all stepper motor pins*/
