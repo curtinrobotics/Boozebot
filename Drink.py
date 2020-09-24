@@ -83,7 +83,7 @@ class Drink:
                 self.recipeInstructions[pump] = self.recipeVolume[ingredient] / Data.ParastalticMLperS
             elif pumpNum >= Data.SolenoidNum:
                 self.recipeInstructions[pump] = self.recipeVolume[ingredient] / Data.SolenoidMLperS
-            pumpNum++
+            pumpNum += 1
         return 0
 
     #gets the amount of standard drinks
