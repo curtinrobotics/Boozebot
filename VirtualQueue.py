@@ -4,6 +4,8 @@ import Arduino
 from queue import Queue
 
 class ArduinoThread(threading.Thread):
+    drinkCount = 0
+
     def __init__(self, queue):
         threading.Thread.__init__(self)
         self.queue = queue
@@ -20,5 +22,6 @@ class ArduinoThread(threading.Thread):
         success = False
         while success != True:
             success = Arduino.sendDrink(drink)
-        print("Order " + str(drinkCount) + " is finished.")
+        print("Order " + str(ArduinoThread.drinkCount) + " is finished.")
+        ArduinoThread.drinkCount += 1
         self.drinkCount += 1

@@ -2,12 +2,12 @@ import serial #imports pyserial library
 import time
 
 #sends a new drink request
-def sendDrink(instructions, exitKey='exit', blockSize=10):
+def sendDrink(instructions, exitKey=b'exit\r\n', blockSize=10):
     exit = False
     try:
         arduino = serial.Serial('COM3', 9600) #initialises serial port
         time.sleep(2) #waits for arduino boot, can possibly be shorter
-        ser.flushInput()
+        arduino.flushInput()
 
         pumpString = ""
 
@@ -18,12 +18,11 @@ def sendDrink(instructions, exitKey='exit', blockSize=10):
                 pumpString += str(pump) #combines pumps to send
         arduino.write(str(pumpString).encode())
 
-        ser.flushInput()
+        arduino.flushInput()
         while exit != True:
             try:
-                command = arduino.readline(arduino.inWaiting())
-                decoded_command = float(command[0:len(command)-2].decode("utf-8")).strip('\n')
-                print(decoded_bytes)
+                command = arduino.readline()
+                print(command)
             except:
                 print("Keyboard Interrupt")
             if command == exitKey:
