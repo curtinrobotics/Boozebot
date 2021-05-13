@@ -1,7 +1,7 @@
 int stepPin = 3;
 int initial = 1000;
-int last = 290;
-int increment = 10;
+int last = 310;
+int increment = 5;
 int runLoop = 20; 
 static int broken = 0;
 int dirPin = 2;
@@ -22,19 +22,15 @@ void loop()
 {
   if (Serial.available() > 0) {
     inMill = Serial.parseInt();
-    Serial.print(inMill);
-    Serial.print("/n");
-    delay(1000);
-    if (inMill > 3 && inMill < 31) {
+    if (inMill > 3 && inMill < 101) {
       if (inMill != NULL) {
         digitalWrite(dirPin, HIGH);
-        // put your main code here, to run repeatedly:
         accelerationStepper(initial, last, increment, stepPin);
-        constantStepper(inMill, last, stepPin);
+        constantStepper(inMill, last, stepPin); 
         Serial.println("exit");
+      }
     }
   }
-}
 }
 
 /*accelerates parastaltic pump to desired speed*/
@@ -87,5 +83,5 @@ void constantStepper(int inMill, int period, int stepPin)
 
 long int MillToStep(int Mill)
 {
-  return 481*Mill - 1440; //481 is exactly 1ml in steps ~ acceleration is exactly 1440 steps
+  return 350*Mill - 2760; //350 is roughly 1ml in steps ~ acceleration is exactly 1440 steps
 }
