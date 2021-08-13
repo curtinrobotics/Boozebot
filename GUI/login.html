@@ -1,28 +1,14 @@
 {% extends "layout.html" %}
 {% block content %}
   <h2 class="page-heading">LOGIN</h2>
-  {% if session['Auth'] %}
-    {% if session['Auth'] == True %}
-      <p>Already Logged In</p>
-    {% else %}
-    <form method="POST" action="" id="login-form">
-      <option>
-        {{ form.ID.label }}
-        {{ form.ID(class_="input-text") }}
-      </option>
+<script>
+window.location.replace("/card_login");
+// setTimeout(function () {
+//    window.location.href = "/card_login"; //will redirect to your blog page (an ex: blog.html)
+// }, 500); //will call the function after 2 secs.
 
-      {{ form.submit(class_="button submit") }}
-    </form>
-    {% endif %}
-
-  {% else %}
-  <form method="POST" action="" id="login-form">
-    <option>
-      {{ form.ID.label }}
-      {{ form.ID(class_="input-text") }}
-    </option>
-
-    {{ form.submit(class_="button submit") }}
-  </form>
-  {% endif %}
+</script>
+    <p>
+        Please scan your student card
+    </p>
 {% endblock content %}

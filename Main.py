@@ -5,11 +5,13 @@
 #Created: 10/04/2019
 
 #imports relevate libraries
+import sys
 import time #imports the time library
 import Drink #imports the the drink class
 import Data #imports the data file
 import Update #imports the Dataupdate function set
 import Arduino #imports Arduino communication library
+import Database
 from functools import partial
 
 #threading
@@ -23,6 +25,8 @@ from forms import uploadMenu, adminSettings, confirmOrder, adminLogin, addCredit
 from flask import Flask, render_template, url_for, flash, redirect, session, make_response
 
 import os
+
+is_scanning = None
 
 app = Flask(__name__, template_folder="GUI", static_url_path="/GUI", static_folder="GUI")
 
@@ -59,6 +63,7 @@ def closeAuth():
     session.pop('Auth')
 
 def generateAuth(_ID):
+    print("genAuth", _ID)
     usersIN = open(users, 'r')
     for line in usersIN:
         if len(line) > 5:
@@ -81,11 +86,11 @@ def purchaseDrink(_ID, drink):
             ID, Credit, Name, Access = line.split(', ')
             if _ID == ID:
                 if session['AdminOveride'] == True and Access == 'Admin':
-                    submitDrink(drink)
+                    submitDrink(_ID, drink)
                 elif int(Credit) > 0:
                     Credit = int(Credit) - 1
                     line = ID + ', ' + str(Credit) + ', ' + Name + ', ' + Access + '\n'
-                    submitDrink(drink)
+                    submitDrink(_ID, drink)
                 else:
                     flash('No Credit', 'danger')
             usersOUT.write(line)
@@ -97,11 +102,16 @@ def purchaseDrink(_ID, drink):
     except PermissionError:
         print(users + 'is running in a higher process')
 
-def submitDrink(drink='NULL'):
+def submitDrink(id, drink='NULL'):
     print(drink)
     Data.menu[drink].setRecipeVolume()
-    Data.menu[drink].setRecipeInstructions()
+    # Fixme — Recipe needs implementation
+    # Data.menu[drink].setRecipeInstructions()
+    print(Data.menu[drink].getStndDrink())
     ArduinoQueue.queue.put(Data.menu[drink].recipeInstructions)
+
+    if id != -1:
+        Database.log_drink(id, Data.menu[drink].getStndDrink())
 
 def saveFile(file, location, name='NULL'):
     try:
@@ -157,23 +167,71 @@ def drink(drinkName):
     if session['OpenBar'] == True:
         form = confirmOrder()
     else:
-        form = buyDrink()
-    if form.confirm.data:
-        for drink in Data.menu:
-            if Data.menu[drink].name == drinkName:
-                drinkExists = True
-                if session['OpenBar'] == True:
-                    submitDrink(drink)
-                else:
-                    purchaseDrink(form.ID.data, drink)
-                return redirect(url_for('menu'))
+        drink_dict = {
+            "drink_name": drinkName
+        }
+        return render_template('card-order.html', drink_dict=drink_dict)
+
+    #
+    # if form.confirm.data:
+    #     is_drunk = Database.is_drunk(form.ID.data)
+    #
+    #     for drink in Data.menu:
+    #         if Data.menu[drink].name == drinkName:
+    #
+    #             if is_drunk and Data.menu[drink].getStndDrink() != 0.0:
+    #                 return redirect(url_for('drunk'))
+    #
+    #             drinkExists = True
+    #             if session['OpenBar'] == True:
+    #                 submitDrink(-1, drink)
+    #             else:
+    #                 purchaseDrink(form.ID.data, drink)
+    #             return redirect(url_for('menu'))
+    # for drink in Data.menu:
+    #     if Data.menu[drink].name == drinkName:
+    #         drinkExists = True
+    #         return render_template('confirm.html', drink=Data.menu[drink], form=form)
+    # if drinkExists == False:
+    #     return redirect(url_for('drinkMissing'))
+    # return render_template('menu.html', menu=Data.menu)
+
+@app.route("/card_order_drink/<drinkName>")
+def card_order_drink(drinkName):
+    print(drinkName)
+    # Get the scanned ID from the Arduino
+    scanned_id = Arduino.getID()
+
+    # If the ID is empty, an invalid ID was scanned or the read timed out
+    if scanned_id == "":
+        # Redirect to timeout page
+        return redirect(url_for('timeout'))
+
+    print(f"Scanned ID: {scanned_id}")
+
+    drinkExists = False
+
+    is_drunk = Database.is_drunk(scanned_id)
+
     for drink in Data.menu:
         if Data.menu[drink].name == drinkName:
+
+            if is_drunk and Data.menu[drink].getStndDrink() != 0.0:
+                return redirect(url_for('drunk'))
+
             drinkExists = True
-            return render_template('confirm.html', drink=Data.menu[drink], form=form)
+            if session['OpenBar'] == True:
+                submitDrink(-1, drink)
+            else:
+                purchaseDrink(scanned_id, drink)
+            return redirect(url_for('menu'))
     if drinkExists == False:
         return redirect(url_for('drinkMissing'))
-    return render_template('menu.html', menu=Data.menu)
+
+
+@app.route("/drunk")
+def drunk():
+    return render_template('drunk.html')
 
 @app.route("/purchase/credits", methods=['GET', 'POST'])
 def buyCredit():
@@ -235,12 +293,43 @@ def register():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     form = adminLogin()
-    if form.ID.data:
+
+    # # Old code for form-based auth -- uncomment this block if not using card ID
+    # if form.ID.data:
+    #     generateAuth(form.ID.data)
+    #     if checkAuth():
+    #         flash('logged in successfully', 'success')
+    #         return redirect(url_for('setting'))
+
+    return render_template('login.html', form=form, title='login')
+
+@app.route("/card_login")
+def card_login():
+    # Get the scanned ID from the Arduino
+    scanned_id = Arduino.getID()
+
+    # If the ID is empty, an invalid ID was scanned or the read timed out
+    if scanned_id == "":
+        # Redirect to timeout page
+        return redirect(url_for('timeout'))
+
+    # Generate credentials for scanned ID and redirect to settings page
+    generateAuth(scanned_id)
+    return redirect(url_for('setting'))
+
+@app.route("/timeout", methods=['GET', 'POST'])
+def timeout():
+    form = adminLogin()
+
+    if form.ID:
+        print("Got form ID")
+        print("ID",form.ID.data)
         generateAuth(form.ID.data)
         if checkAuth():
             flash('logged in successfully', 'success')
             return redirect(url_for('setting'))
-    return render_template('login.html', form=form, title='login')
+
+    return render_template('timeout.html', form=form, title='login')
 
 @app.route("/logout")
 def logout():
@@ -303,4 +392,4 @@ if __name__ == '__main__':
     initializeMenu()
     ArduinoQueue = VirtualQueue.ArduinoThread(drinkQueue)
     ArduinoQueue.start()
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)

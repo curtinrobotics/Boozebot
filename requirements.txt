@@ -1,0 +1,2 @@
+pyserial
+flask_wtf
