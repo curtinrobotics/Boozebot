@@ -139,7 +139,7 @@ def saveFile(file, location, name='NULL'):
         fileOUT.write(line)
     fileIN.close()
     fileOUT.close()
-    
+
 
 def saveMenu(_menu, _ingredients, _pumps, name):
     menusIN = open(menus, 'r')
@@ -260,6 +260,9 @@ def drinkMissing():
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
+    """
+
+    """
     form = newUser()
     if form.ID.data:
         generateAuth(form.adminID.data)
@@ -287,20 +290,19 @@ def register():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    """
+    Standard login
+    """
     form = adminLogin()
-
-    # # Old code for form-based auth -- uncomment this block if not using card ID
-    # if form.ID.data:
-    #     generateAuth(form.ID.data)
-    #     if checkAuth():
-    #         flash('logged in successfully', 'success')
-    #         return redirect(url_for('setting'))
 
     return render_template('login.html', form=form, title='login')
 
 
 @app.route("/card_login")
 def card_login():
+    """
+    Card scanning page
+    """
     # Get the scanned ID from the Arduino
     scanned_id = Arduino.getID()
 
@@ -316,6 +318,9 @@ def card_login():
 
 @app.route("/timeout", methods=['GET', 'POST'])
 def timeout():
+    """
+    Manual login page, shown when card scanner is disconnected or has timed out
+    """
     form = adminLogin()
 
     if form.ID:
@@ -331,12 +336,18 @@ def timeout():
 
 @app.route("/logout")
 def logout():
+    """
+    Logout endpoint
+    """
     closeAuth()
     return redirect(url_for('menu'))
 
 
 @app.route("/settings", methods=['GET', 'POST'])
 def setting():
+    """
+    Settings form
+    """
     form = adminSettings()
     if checkAuth() == True:
         # SETTINGS
@@ -362,6 +373,9 @@ def setting():
 
 @app.route("/select/menu", methods=['GET', 'POST'])
 def selectMenu():
+    """
+    Shows the the list of available menus to select
+    """
     menusIN = open(menus, 'r')
     list = []
     for line in menusIN:
@@ -372,12 +386,18 @@ def selectMenu():
 
 @app.route("/select/menu/<menuName>", methods=['GET', 'POST'])
 def initMenu(menuName):
+    """
+    Selects a menu as the current menu
+    """
     initializeMenu(menuName)
     return redirect(url_for('menu'))
 
 
 @app.route("/upload/menu", methods=['GET', 'POST'])
 def newMenu():
+    """
+    Form for creating a new menu
+    """
     form = uploadMenu()
     if form.confirm.data:
         absFilePath = form.location.data
