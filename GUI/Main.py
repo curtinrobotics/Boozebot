@@ -1,25 +1,25 @@
-#This program is the main program for boozebot and integrates all other programs
-#Programmers: TRG
-#Iteration: 0.5
-#Last edited: 05/04/2019
-#Created: 10/04/2019
+# This program is the main program for boozebot and integrates all other programs
+# Programmers: TRG
+# Iteration: 0.5
+# Last edited: 05/04/2019
+# Created: 10/04/2019
 
-#imports relevate libraries
+# imports relevate libraries
 import sys
-import time #imports the time library
-import Drink #imports the the drink class
-import Data #imports the data file
-import Update #imports the Dataupdate function set
-import Arduino #imports Arduino communication library
+import time  # imports the time library
+import Drink  # imports the the drink class
+import Data  # imports the data file
+import Update  # imports the Dataupdate function set
+import Arduino  # imports Arduino communication library
 import Database
 from functools import partial
 
-#threading
+# threading
 import threading
 from queue import Queue
 import VirtualQueue
 
-#flask
+# flask
 from PIL import Image
 from forms import uploadMenu, adminSettings, confirmOrder, adminLogin, addCredits, newUser, buyDrink, customDrink
 from flask import Flask, render_template, url_for, flash, redirect, session, make_response
@@ -40,13 +40,15 @@ users = "Init/Users.csv"
 menus = "Init/Menu.csv"
 drinkQueue = Queue()
 
-#Updates all data from files
+
+# Updates all data from files
 def initializeMenu(InitFile="Standard"):
-    Update.updateCupType('Init/Cups.ini') #updates the cup volume list
-    Update.updateIngredientAlcohol('Init/AlcoholContent.ini') #updates the alcholic content of ingredients list
-    Update.updateIngredientPump('Init/' + InitFile + '/Pumps.ini') #updates the ingredient pumps
-    Update.updateIngredientList('Init/' + InitFile + '/Ingredients.ini') #updates a list of available ingredients
-    Update.updateMenu('Init/' + InitFile + '/Menu.ini') #updates the menu and recipe instructions
+    Update.updateCupType('Init/Cups.ini')  # updates the cup volume list
+    Update.updateIngredientAlcohol('Init/AlcoholContent.ini')  # updates the alcholic content of ingredients list
+    Update.updateIngredientPump('Init/' + InitFile + '/Pumps.ini')  # updates the ingredient pumps
+    Update.updateIngredientList('Init/' + InitFile + '/Ingredients.ini')  # updates a list of available ingredients
+    Update.updateMenu('Init/' + InitFile + '/Menu.ini')  # updates the menu and recipe instructions
+
 
 def startSession():
     try:
@@ -63,8 +65,10 @@ def startSession():
         session['AdminOveride'] = False
     session['RUN'] = True
 
+
 def closeAuth():
     session.pop('Auth')
+
 
 def generateAuth(_ID):
     print("genAuth", _ID)
@@ -79,8 +83,10 @@ def generateAuth(_ID):
                     flash('No Admin Access', 'danger')
     usersIN.close()
 
+
 def checkAuth():
     return session.get('Auth')
+
 
 def purchaseDrink(_ID, drink):
     usersIN = open(users, 'r')
@@ -106,6 +112,7 @@ def purchaseDrink(_ID, drink):
     except PermissionError:
         print(users + 'is running in a higher process')
 
+
 def submitDrink(id, drink='NULL'):
     print(drink)
     Data.menu[drink].setRecipeVolume()
@@ -117,12 +124,13 @@ def submitDrink(id, drink='NULL'):
     if id != -1:
         Database.log_drink(id, Data.menu[drink].getStndDrink())
 
+
 def saveFile(file, location, name='NULL'):
     try:
         os.mkdir(location)
-        print("Directory " , location,  " Created ")
+        print("Directory ", location, " Created ")
     except FileExistsError:
-        print("Directory " , location,  " already exists")
+        print("Directory ", location, " already exists")
     if name == 'NULL':
         name = file
     fileIN = open(file, 'r')
@@ -131,6 +139,7 @@ def saveFile(file, location, name='NULL'):
         fileOUT.write(line)
     fileIN.close()
     fileOUT.close()
+    
 
 def saveMenu(_menu, _ingredients, _pumps, name):
     menusIN = open(menus, 'r')
@@ -148,12 +157,13 @@ def saveMenu(_menu, _ingredients, _pumps, name):
     location = 'Init/' + name + '/'
     try:
         os.mkdir(location)
-        print("Directory " , location,  " Created ")
+        print("Directory ", location, " Created ")
     except FileExistsError:
-        print("Directory " , location,  " already exists")
+        print("Directory ", location, " already exists")
     saveFile(_menu, location, 'Menu.ini')
     saveFile(_ingredients, location, 'Ingredients.ini')
     saveFile(_pumps, location, 'Pumps.ini')
+
 
 @app.route("/home")
 @app.route("/")
@@ -197,19 +207,23 @@ def card_order_drink(drinkName):
     # if drinkExists == False:
     #     return redirect(url_for('drinkMissing'))
 
+
 def card_scan_background():
     scanned_id = Arduino.getID()
     print("Scanned card:", scanned_id)
     print(scanned_id, file=open('scanned_card.txt', 'w'))
+
 
 @app.route("/card_status")
 def card_status():
     with open('scanned_card.txt', 'r') as file:
         return file.read()
 
+
 @app.route("/drunk")
 def drunk():
     return render_template('drunk.html')
+
 
 @app.route("/purchase/credits", methods=['GET', 'POST'])
 def buyCredit():
@@ -238,9 +252,11 @@ def buyCredit():
             return redirect(url_for('menu'))
     return render_template('credits.html', form=form)
 
+
 @app.route("/missing")
 def drinkMissing():
     return render_template('missing.html')
+
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
@@ -268,6 +284,7 @@ def register():
                 flash((form.ID.data + ' has already registered'), 'danger')
     return render_template('register.html', form=form)
 
+
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     form = adminLogin()
@@ -280,6 +297,7 @@ def login():
     #         return redirect(url_for('setting'))
 
     return render_template('login.html', form=form, title='login')
+
 
 @app.route("/card_login")
 def card_login():
@@ -295,13 +313,14 @@ def card_login():
     generateAuth(scanned_id)
     return redirect(url_for('setting'))
 
+
 @app.route("/timeout", methods=['GET', 'POST'])
 def timeout():
     form = adminLogin()
 
     if form.ID:
         print("Got form ID")
-        print("ID",form.ID.data)
+        print("ID", form.ID.data)
         generateAuth(form.ID.data)
         if checkAuth():
             flash('logged in successfully', 'success')
@@ -309,16 +328,18 @@ def timeout():
 
     return render_template('timeout.html', form=form, title='login')
 
+
 @app.route("/logout")
 def logout():
     closeAuth()
     return redirect(url_for('menu'))
 
+
 @app.route("/settings", methods=['GET', 'POST'])
 def setting():
     form = adminSettings()
     if checkAuth() == True:
-        #SETTINGS
+        # SETTINGS
         session['OpenBar'] = False
         session['CustomDrinks'] = False
         session['AdminOveride'] = False
@@ -338,6 +359,7 @@ def setting():
             return redirect(url_for('menu'))
     return render_template('settings.html', form=form, title='settings')
 
+
 @app.route("/select/menu", methods=['GET', 'POST'])
 def selectMenu():
     menusIN = open(menus, 'r')
@@ -347,10 +369,12 @@ def selectMenu():
         list.append(line)
     return render_template('select-menu.html', list=list, title='settings')
 
+
 @app.route("/select/menu/<menuName>", methods=['GET', 'POST'])
 def initMenu(menuName):
     initializeMenu(menuName)
     return redirect(url_for('menu'))
+
 
 @app.route("/upload/menu", methods=['GET', 'POST'])
 def newMenu():
@@ -365,6 +389,7 @@ def newMenu():
         saveMenu(menu, ingredients, pumps, form.name.data)
         return redirect(url_for('selectMenu'))
     return render_template('upload-menu.html', form=form, title='settings')
+
 
 if __name__ == '__main__':
     initializeMenu()
