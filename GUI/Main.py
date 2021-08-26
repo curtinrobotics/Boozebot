@@ -43,6 +43,9 @@ drinkQueue = Queue()
 
 # Updates all data from files
 def initializeMenu(InitFile="Standard"):
+    """
+    Initialises the menu
+    """
     Update.updateCupType('Init/Cups.ini')  # updates the cup volume list
     Update.updateIngredientAlcohol('Init/AlcoholContent.ini')  # updates the alcholic content of ingredients list
     Update.updateIngredientPump('Init/' + InitFile + '/Pumps.ini')  # updates the ingredient pumps
@@ -51,6 +54,10 @@ def initializeMenu(InitFile="Standard"):
 
 
 def startSession():
+    """
+    Sets up run once functions for the python/flask backend
+    Currently sets up cookies and initialises menu
+    """
     try:
         if session['RUN'] != True:
             initializeMenu()
@@ -67,10 +74,16 @@ def startSession():
 
 
 def closeAuth():
+    """
+    Delete Auth cookie to logout user
+    """
     session.pop('Auth')
 
 
 def generateAuth(_ID):
+    """
+    Check for valid ID and generates login cookie
+    """
     print("genAuth", _ID)
     usersIN = open(users, 'r')
     for line in usersIN:
@@ -85,10 +98,17 @@ def generateAuth(_ID):
 
 
 def checkAuth():
+    """
+    Check for login cookie
+    """
     return session.get('Auth')
 
 
 def purchaseDrink(_ID, drink):
+    """
+    Lets the user purchase a drink
+    Look up the user ID on the database to check if they have enough credit to buy the drink
+    """
     usersIN = open(users, 'r')
     usersOUT = open('Init/out.csv', 'w')
     for line in usersIN:
@@ -114,6 +134,9 @@ def purchaseDrink(_ID, drink):
 
 
 def submitDrink(id, drink='NULL'):
+    """
+    Sends the drink instructions to the Booze Bot to serve
+    """
     print(drink)
     Data.menu[drink].setRecipeVolume()
     # Fixme — Recipe needs implementation
@@ -168,12 +191,18 @@ def saveMenu(_menu, _ingredients, _pumps, name):
 @app.route("/home")
 @app.route("/")
 def home():
+    """
+    Homepage
+    """
     startSession()
     return redirect(url_for('setting'))
 
 
 @app.route("/card_order_drink/<drinkName>")
 def card_order_drink(drinkName):
+    """
+    Page to order drinks
+    """
     print(drinkName)
     # Get the scanned ID from the Arduino
     thread = threading.Thread(target=card_scan_background)
@@ -222,11 +251,17 @@ def card_status():
 
 @app.route("/drunk")
 def drunk():
+    """
+    Inform user they had too many standard drinks
+    """
     return render_template('drunk.html')
 
 
 @app.route("/purchase/credits", methods=['GET', 'POST'])
 def buyCredit():
+    """
+    Add credit to their account
+    """
     form = addCredits()
     if form.ID.data:
         generateAuth(form.adminID.data)
