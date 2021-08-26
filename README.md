@@ -111,7 +111,7 @@ Add additional notes about how to deploy this on a live system.
 
 ## ✍️ Authors <a name = "authors"></a>
 - Thomas Ryan-Galloway(TRG) [@Tomant1](https://github.com/Tomant1) - Initial Python backend and arduino
-- Lachlan Bell (LMB) [@lachlanbell](https://github.com/lachlanbell) — Flask app and student ID scanner firmware
+- Lachlan Bell (LB) [@lachlanbell](https://github.com/lachlanbell) — Flask app and student ID scanner firmware
 
 See also the list of [contributors](https://github.com/kylelobo/The-Documentation-Compendium/contributors) who participated in this project.
 
