@@ -6,7 +6,7 @@
       <a href=""><li class="menu-item Custom">Custom<small> - this feature is yet to be implemented</small></li></a>
     {% endif %}
     {% for drink in menu %}
-      <a href="menu/{{ menu[drink].name }}"><li class="menu-item {{ menu[drink].name }}">{{ menu[drink].name }}</li></a>
+      <a href="/menu/{{ menu[drink].name }}"><li class="menu-item {{ menu[drink].name }}">{{ menu[drink].name }}</li></a>
     {% endfor %}
   </ul>
 {% endblock content %}

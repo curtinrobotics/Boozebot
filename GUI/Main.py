@@ -24,11 +24,15 @@ from PIL import Image
 from forms import uploadMenu, adminSettings, confirmOrder, adminLogin, addCredits, newUser, buyDrink, customDrink
 from flask import Flask, render_template, url_for, flash, redirect, session, make_response
 
+# Blueprints
+from views import menu
+
 import os
 
 is_scanning = None
 
-app = Flask(__name__, template_folder="GUI", static_url_path="/GUI", static_folder="GUI")
+app = Flask(__name__, template_folder="templates", static_url_path="/templates", static_folder="templates")
+app.register_blueprint(menu.bp)
 
 app.config['SECRET_KEY'] = '5791628bb0b13ceh98dfjk7lp76dfde280ba245'
 
@@ -157,77 +161,51 @@ def home():
     startSession()
     return redirect(url_for('setting'))
 
-@app.route("/menu")
-def menu():
-    return render_template('menu.html', menu=Data.menu, title='Menu')
-
-@app.route("/menu/<drinkName>", methods=['GET', 'POST'])
-def drink(drinkName):
-    drinkExists = False
-    if session['OpenBar'] == True:
-        form = confirmOrder()
-    else:
-        drink_dict = {
-            "drink_name": drinkName
-        }
-        return render_template('card-order.html', drink_dict=drink_dict)
-
-    #
-    # if form.confirm.data:
-    #     is_drunk = Database.is_drunk(form.ID.data)
-    #
-    #     for drink in Data.menu:
-    #         if Data.menu[drink].name == drinkName:
-    #
-    #             if is_drunk and Data.menu[drink].getStndDrink() != 0.0:
-    #                 return redirect(url_for('drunk'))
-    #
-    #             drinkExists = True
-    #             if session['OpenBar'] == True:
-    #                 submitDrink(-1, drink)
-    #             else:
-    #                 purchaseDrink(form.ID.data, drink)
-    #             return redirect(url_for('menu'))
-    # for drink in Data.menu:
-    #     if Data.menu[drink].name == drinkName:
-    #         drinkExists = True
-    #         return render_template('confirm.html', drink=Data.menu[drink], form=form)
-    # if drinkExists == False:
-    #     return redirect(url_for('drinkMissing'))
-    # return render_template('menu.html', menu=Data.menu)
 
 @app.route("/card_order_drink/<drinkName>")
 def card_order_drink(drinkName):
     print(drinkName)
     # Get the scanned ID from the Arduino
-    scanned_id = Arduino.getID()
+    thread = threading.Thread(target=card_scan_background)
+    # scanned_id = Arduino.getID()
+    thread.start()
+    return redirect(url_for('timeout'))
 
     # If the ID is empty, an invalid ID was scanned or the read timed out
-    if scanned_id == "":
-        # Redirect to timeout page
-        return redirect(url_for('timeout'))
+    # if scanned_id == "":
+    #     # Redirect to timeout page
+    #     return redirect(url_for('timeout'))
+    #
+    # print(f"Scanned ID: {scanned_id}")
+    #
+    # drinkExists = False
+    #
+    # is_drunk = Database.is_drunk(scanned_id)
+    #
+    # for drink in Data.menu:
+    #     if Data.menu[drink].name == drinkName:
+    #
+    #         if is_drunk and Data.menu[drink].getStndDrink() != 0.0:
+    #             return redirect(url_for('drunk'))
+    #
+    #         drinkExists = True
+    #         if session['OpenBar'] == True:
+    #             submitDrink(-1, drink)
+    #         else:
+    #             purchaseDrink(scanned_id, drink)
+    #         return redirect(url_for('menu'))
+    # if drinkExists == False:
+    #     return redirect(url_for('drinkMissing'))
 
-    print(f"Scanned ID: {scanned_id}")
+def card_scan_background():
+    scanned_id = Arduino.getID()
+    print("Scanned card:", scanned_id)
+    print(scanned_id, file=open('scanned_card.txt', 'w'))
 
-    drinkExists = False
-
-    is_drunk = Database.is_drunk(scanned_id)
-
-    for drink in Data.menu:
-        if Data.menu[drink].name == drinkName:
-
-            if is_drunk and Data.menu[drink].getStndDrink() != 0.0:
-                return redirect(url_for('drunk'))
-
-            drinkExists = True
-            if session['OpenBar'] == True:
-                submitDrink(-1, drink)
-            else:
-                purchaseDrink(scanned_id, drink)
-            return redirect(url_for('menu'))
-    if drinkExists == False:
-        return redirect(url_for('drinkMissing'))
-
+@app.route("/card_status")
+def card_status():
+    with open('scanned_card.txt', 'r') as file:
+        return file.read()
 
 @app.route("/drunk")
 def drunk():

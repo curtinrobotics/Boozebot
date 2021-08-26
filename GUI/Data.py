@@ -11,8 +11,8 @@ ParastalticMLperS = 1 #ml per second of the pump
 SolenoidMLperS = 10 #ml per second of the pump
 stndDrink = 21 #ml alcohol in a standard drink
 maxDrinks = 1 #Max number std drinks allowed per user per hour
-ScannerPort = '/dev/cu.usbmodem14201'
-PumpControllerPort = '/dev/cu.usbmodem14101'
+ScannerPort = '/dev/cu.usbmodem14101'
+PumpControllerPort = '/dev/cu.usbmodem14201'
 
 #Updateable:
 ingredientAlcohol = {'orange juice': 0, 'tequila': 40, 'vodka': 40, 'lemonade': 0, 'milk': 0} #key: ingredient name, value: percentage alchohol

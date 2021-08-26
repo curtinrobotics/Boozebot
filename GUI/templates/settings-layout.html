@@ -13,11 +13,11 @@
     {% else %}
       <h2 class="page-heading">Access Denied!</h2>
       <p>You need to be logged in as admin to access this page</p>
-      <a href="{{ url_for('menu') }}">Return to Menu</a>
-      <img src="/GUI/Themes/Theme-Images/loading.gif">
+      <a href="{{ url_for('menu.menu') }}">Return to Menu</a>
+      <img src="/templates/Themes/Theme-Images/loading.gif">
     {% endif %}
   {% else %}
     <p>You need to be logged in as admin to access this page</p>
-    <a href="{{ url_for('menu') }}">Return to Menu</a>
+    <a href="{{ url_for('menu.menu') }}">Return to Menu</a>
   {% endif %}
 {% endblock content %}
