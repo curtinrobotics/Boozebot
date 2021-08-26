@@ -5,14 +5,10 @@
 # Created: 10/04/2019
 
 # imports relevate libraries
-import sys
-import time  # imports the time library
-import Drink  # imports the the drink class
 import Data  # imports the data file
 import Update  # imports the Dataupdate function set
 import Arduino  # imports Arduino communication library
 import Database
-from functools import partial
 
 # threading
 import threading
@@ -21,7 +17,8 @@ import VirtualQueue
 
 # flask
 from PIL import Image
-from forms import uploadMenu, adminSettings, confirmOrder, adminLogin, addCredits, newUser, buyDrink, customDrink
+from forms import uploadMenu, adminSettings, confirmOrder, adminLogin, addCredits, \
+     newUser, buyDrink, customDrink
 from flask import Flask, render_template, url_for, flash, redirect, session, make_response
 
 # Blueprints
@@ -31,7 +28,8 @@ import os
 
 is_scanning = None
 
-app = Flask(__name__, template_folder="templates", static_url_path="/templates", static_folder="templates")
+app = Flask(__name__, template_folder="templates", static_url_path="/templates", \
+            static_folder="templates")
 app.register_blueprint(menu.bp)
 
 app.config['SECRET_KEY'] = '5791628bb0b13ceh98dfjk7lp76dfde280ba245'
@@ -46,11 +44,16 @@ def initializeMenu(InitFile="Standard"):
     """
     Initialises the menu
     """
-    Update.updateCupType('Init/Cups.ini')  # updates the cup volume list
-    Update.updateIngredientAlcohol('Init/AlcoholContent.ini')  # updates the alcholic content of ingredients list
-    Update.updateIngredientPump('Init/' + InitFile + '/Pumps.ini')  # updates the ingredient pumps
-    Update.updateIngredientList('Init/' + InitFile + '/Ingredients.ini')  # updates a list of available ingredients
-    Update.updateMenu('Init/' + InitFile + '/Menu.ini')  # updates the menu and recipe instructions
+    # updates the cup volume list
+    Update.updateCupType('Init/Cups.ini')
+    # updates the alcholic content of ingredients list
+    Update.updateIngredientAlcohol('Init/AlcoholContent.ini')
+    # updates the ingredient pumps
+    Update.updateIngredientPump('Init/' + InitFile + '/Pumps.ini')
+    # updates a list of available ingredients
+    Update.updateIngredientList('Init/' + InitFile + '/Ingredients.ini')
+    # updates the menu and recipe instructions
+    Update.updateMenu('Init/' + InitFile + '/Menu.ini')
 
 
 def startSession():
@@ -107,7 +110,7 @@ def checkAuth():
 def purchaseDrink(_ID, drink):
     """
     Lets the user purchase a drink
-    Look up the user ID on the database to check if they have enough credit to buy the drink
+    Look up the user ID on the database to check for credit
     """
     usersIN = open(users, 'r')
     usersOUT = open('Init/out.csv', 'w')
@@ -149,6 +152,9 @@ def submitDrink(id, drink='NULL'):
 
 
 def saveFile(file, location, name='NULL'):
+    """
+    Copies file to a location
+    """
     try:
         os.mkdir(location)
         print("Directory ", location, " Created ")
@@ -162,9 +168,12 @@ def saveFile(file, location, name='NULL'):
         fileOUT.write(line)
     fileIN.close()
     fileOUT.close()
-    
+
 
 def saveMenu(_menu, _ingredients, _pumps, name):
+    """
+    Saves current menu to file
+    """
     menusIN = open(menus, 'r')
     menuNUM = 0
     for line in menusIN:
@@ -310,7 +319,8 @@ def register():
             usersIN.close()
             if exists == False:
                 usersIN = open(users, 'a')
-                line = form.ID.data + ', ' + str(form.credit.data) + ', ' + form.name.data + ', User\n'
+                line = form.ID.data + ', ' + str(form.credit.data) + ', ' + \
+                       form.name.data + ', User\n'
                 usersIN.write(line)
                 usersIN.close()
                 flash((form.ID.data + ' registered successfully'), 'success')
