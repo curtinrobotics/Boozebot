@@ -299,13 +299,16 @@ def buyCredit():
 
 @app.route("/missing")
 def drinkMissing():
+    """
+    Missing drink error page
+    """
     return render_template('missing.html')
 
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     """
-
+    Register new users
     """
     form = newUser()
     if form.ID.data:
