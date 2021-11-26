@@ -4,27 +4,22 @@
 # Last edited: 05/04/2019
 # Created: 10/04/2019
 
-# imports relevate libraries
-import Data  # imports the data file
-import Update  # imports the Dataupdate function set
-import Arduino  # imports Arduino communication library
-import Database
-
-# threading
-import threading
-from queue import Queue
-import VirtualQueue
+import os
+import multiprocessing
 
 # flask
-from PIL import Image
 from forms import uploadMenu, adminSettings, confirmOrder, adminLogin, addCredits, \
      newUser, buyDrink, customDrink
 from flask import Flask, render_template, url_for, flash, redirect, session, make_response
 
+from workers import cardreader, pumpcontroller
+
+import Data  # imports the data file
+import Update  # imports the Dataupdate function set
+import Database
+
 # Blueprints
 from views import menu
-
-import os
 
 is_scanning = None
 
@@ -36,8 +31,11 @@ app.config['SECRET_KEY'] = '5791628bb0b13ceh98dfjk7lp76dfde280ba245'
 
 users = "Init/Users.csv"
 menus = "Init/Menu.csv"
-drinkQueue = Queue()
 
+
+# Create queues for worker processes
+id_queue = multiprocessing.Queue()
+drink_queue = multiprocessing.Queue()
 
 # Updates all data from files
 def initializeMenu(InitFile="Standard"):
@@ -460,7 +458,14 @@ def newMenu():
 
 
 if __name__ == '__main__':
+    # Start worker processes in background
+    card_process = cardreader.CardReaderProcess(id_queue)
+    card_process.daemon = True
+    card_process.start()
+
+    pump_process = pumpcontroller.PumpControllerProcess(drink_queue)
+    pump_process.daemon = True
+    pump_process.start()
+
     initializeMenu()
-    ArduinoQueue = VirtualQueue.ArduinoThread(drinkQueue)
-    ArduinoQueue.start()
-    app.run(debug=True, threaded=True)
+    app.run()
