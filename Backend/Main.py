@@ -1,5 +1,5 @@
 # This program is the main program for boozebot and integrates all other programs
-# Programmers: TRG
+# Programmers: TRG, LMB, AT
 # Iteration: 0.5
 # Last edited: 05/04/2019
 # Created: 10/04/2019
@@ -299,13 +299,16 @@ def buyCredit():
 
 @app.route("/missing")
 def drinkMissing():
+    """
+    Missing drink error page
+    """
     return render_template('missing.html')
 
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     """
-
+    Register new users
     """
     form = newUser()
     if form.ID.data:
