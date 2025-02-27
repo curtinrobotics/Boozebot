@@ -110,7 +110,10 @@ Add additional notes about how to deploy this on a live system.
 - [NodeJs](https://nodejs.org/en/) - Server Environment
 
 ## ✍️ Authors <a name = "authors"></a>
-- [@kylelobo](https://github.com/kylelobo) - Idea & Initial work
+- Thomas Ryan-Galloway(TRG) [@Tomant1](https://github.com/Tomant1) - Initial Python backend and arduino
+- Lachlan Bell (LB) [@lachlanbell](https://github.com/lachlanbell) — Flask app and ID scanner firmware
+- Cody John Dalliston(CJD) [@CodysCodes](https://github.com/CodysCodes) - Perstaltic pumps and sequencing arduino
+- Adrian Tan (AT) [@Adrian-tech-bot](https://github.com/Adrian-tech-bot)
 
 See also the list of [contributors](https://github.com/kylelobo/The-Documentation-Compendium/contributors) who participated in this project.
 
