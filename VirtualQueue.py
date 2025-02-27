@@ -1,12 +1,14 @@
 import threading
 import time
-import Arduino
 from queue import Queue
+
+import Arduino_Library
 
 class ArduinoThread(threading.Thread):
     drinkCount = 0
 
     def __init__(self, queue):
+        # Initialize the thread TODO: make it a pool rather then self setting
         threading.Thread.__init__(self)
         self.queue = queue
         self.daemon = True
@@ -21,7 +23,7 @@ class ArduinoThread(threading.Thread):
     def ServeDrink(self, drink):
         success = False
         while success != True:
-            success = Arduino.sendDrink(drink)
+            success = Arduino_Library.sendDrink(drink)
         print("Order " + str(ArduinoThread.drinkCount) + " is finished.")
         ArduinoThread.drinkCount += 1
         self.drinkCount += 1
